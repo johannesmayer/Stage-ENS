@@ -1,4 +1,4 @@
-import numpy, math, random, time
+import numpy, math, random, time, matplotlib.pyplot as plt
 
 start_time = time.time()
 
@@ -36,20 +36,26 @@ def accept(p,beta,n1,n2):
 def fact_accept(p,beta,n1,n2):
     prob = ((min(1, math.exp(2*beta)*(1-p)))**n1)*((min(1, math.exp(-2*beta)/(1-p)))**n2)        
     return prob                    
-    
+
 L=6
 N=L*L
-S=[random.choice([-1,1]) for k in range(N)]
 beta=0.5
-nbr,site_dic,x_y_dic=square_neighbors(L)
-energies = []
+S=[random.choice([-1,1]) for k in range(N)]
+
 
 acceptance_index = 0.0
 
+factorized = True
+
+
+N_iter = 2**16
 #p = 1-math.exp(-2*beta)
 p = 0.6
-N_iter = 10**4
 
+energies = []
+energy_errors = []
+
+nbr,site_dic,x_y_dic=square_neighbors(L)
 internal_energy = energy(S,nbr)
 
 for i_sweep in range(N_iter):
@@ -89,15 +95,23 @@ for i_sweep in range(N_iter):
                     n_one += 1 
     #here the acceptance probability is introduced
     #print(fact_accept(p,beta,n_one,n_two))
-    if random.uniform(0.,1.) < accept(p,beta,n_one,n_two):
-    #if random.uniform(0.,1.) < fact_accept(p,beta,n_one,n_two):
+    upsilon = 0.0
+    if factorized == True:
+        upsilon = fact_accept(p,beta,n_one,n_two)
+    else:
+        upsilon = accept(p,beta,n_one,n_two)
+        
+    if random.uniform(0.,1.) < upsilon:
         acceptance_index += 1
         for k in cluster:
             S[k] = -S[k]
         internal_energy = internal_energy + 2*n_two - 2*n_one
     #energies.append(energy(S,nbr))
-    energies.append(internal_energy)
-print("Mean energy per particle: "+str(numpy.mean(energies)/N)) 
-print("Cluster flips :"+str(acceptance_index/N_iter))   
+    energies.append(internal_energy/N)
+
+print("Mean energy per particle: "+str(numpy.mean(energies))) 
+print("Cluster flip Acceptance:"+str(acceptance_index/N_iter))   
     
 print("Duration: "+str(time.time()-start_time))  
+
+numpy.save(,energies)
