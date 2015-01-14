@@ -28,88 +28,87 @@ def spinglass_square_neighbors(L):
             
     return nbr,site_dic,x_y_dic, coupling_dic
     
-def energy(S,nbr):
+def energy(S,nbr,coupling_dic):
     ene = 0.0
     for index in range(len(S)):
-        h = sum(S[nbr[index][j]] for j in range(4))
+        h = sum(S[nbr[index][j]]*coupling_dic[tuple(sorted((index,nbr[index][j])))] for j in range(4))
         ene += -h*S[index]/2
     return ene
     
 def magnetisation(S):
     magn = numpy.mean(S)
     return magn
-        
-factorized = True
-        
+
+    
+use_factorized = [True,False]
+
 N_iter = 2**20
 
-
-L = 2
+L = 6
 N = L*L
 #beta = math.log(1+math.sqrt(2))/2
-beta = 0.1
+beta = 0.5
 
 nbr, site_dic, x_y_dic, coupling_dic = spinglass_square_neighbors(L)
 
-print coupling_dic
+initial_S=[random.choice([-1,1]) for k in range(N)]
 
-
-sys.exit("Error message")
-
-S=[random.choice([-1,1]) for k in range(N)]
-
-
-accept_index = 0.0
-
-internal_energy = energy(S,nbr)
-
-energies = []
-magnetisations = []
-
-
-for i_sweep in range(N_iter):
-    if i_sweep % 1000 == 0:
-        print("Progress: "+str(i_sweep)+"/"+str(N_iter))
-    #here pick a random spin and look at the surroundings
-    k=random.randint(0,N-1)
-    h = sum(S[nbr[k][j]] for j in range(4))
-    upsilon = 0.0
-    if factorized == True:
-        del_ener = []
-    #look what energy difference a flip of the chosen spin would make with each 
-    #of its neighbours
-        for j in range(4):
-            del_ener.append(2*S[nbr[k][j]]*S[k])
-    #apply the factorized metropolis p_acc(a->b) = prod(min(1,exp(-beta*delta(E_ij)))
-        bracket_sum = 0.0
-        for iter in range(4):
-            bracket_sum += max(0,del_ener[iter])        
-        upsilon = math.exp(-beta*bracket_sum)
-    else:
-        upsilon = min(1,math.exp(-beta*2*S[k]*h))
-    if random.uniform(0.,1.) < upsilon:
-        S[k] = -S[k]
-        # delta E = 2 * oldspin * h so since we flipped we have to subtract 2hS[k]
-        internal_energy = internal_energy - 2*h*S[k]
-        accept_index += 1
-    energies.append(internal_energy/N)
-    magnetisations.append(magnetisation([S]))
-print("Internal Energy pp: " + str(numpy.mean(energies)))
-print("Magnetisation pp: " + str(numpy.mean(magnetisations)))
-print("acceptance ratio: " + str(accept_index/N_iter))       
-            
+for factorized_algo in use_factorized:
+    if factorized_algo == True:
+        algotype = "Factorized "
+    if factorized_algo == False:
+        algotype = "Standard "
+    S = initial_S[:]
+    internal_energy = energy(S,nbr, coupling_dic)
     
-print("Duration: "+str(time.time() - start_time))    
-
-local = [energies, magnetisations]
-
-"""
-if factorized == True:
-    numpy.save("Data/local_fact_beta_01.npy",local)
+    energies = []
+    magnetisations = []
+    
+    accept_index = 0.0
+    
+    for i_sweep in range(N_iter):
+        if i_sweep % 1000 == 0:
+            print("Progress: "+str(i_sweep)+"/"+str(N_iter))
+        #here pick a random spin and look at the surroundings
+        k=random.randint(0,N-1)
+        h = sum(S[nbr[k][j]]*coupling_dic[tuple(sorted((k,nbr[k][j])))] for j in range(4))
+        upsilon = 0.0
+        if factorized_algo == True:
+            del_ener = []
+        #look what energy difference a flip of the chosen spin would make with each 
+        #of its neighbours
+            for j in range(4):
+                del_ener.append(2*S[nbr[k][j]]*S[k]*coupling_dic[tuple(sorted((k,nbr[k][j])))])
+        #apply the factorized metropolis p_acc(a->b) = prod(min(1,exp(-beta*delta(E_ij)))
+            bracket_sum = 0.0
+            for iter in range(4):
+                bracket_sum += max(0,del_ener[iter])        
+            upsilon = math.exp(-beta*bracket_sum)
+        else:
+            upsilon = min(1,math.exp(-beta*2*S[k]*h))
+        if random.uniform(0.,1.) < upsilon:
+            S[k] = -S[k]
+            # delta E = 2 * oldspin * h so since we flipped we have to subtract 2hS[k]
+            internal_energy = internal_energy - 2*h*S[k]
+            accept_index += 1
+        energies.append(internal_energy/N)
+        magnetisations.append(magnetisation([S]))
+        
+    print(algotype+"Internal Energy pp: " + str(numpy.mean(energies)))
+    print(algotype+"Magnetisation pp: " + str(numpy.mean(magnetisations)))
+    print(algotype+"acceptance ratio: " + str(accept_index/N_iter))       
+                
+        
+    print("Duration: "+str(time.time() - start_time))    
+    
+    local = [energies, magnetisations]
+    
+    if factorized_algo == True:
+        numpy.save("Data/spinglass_local_fact_beta_01.npy",local)
+        
+        
+    if factorized_algo == False:
+        numpy.save("Data/spinglass_local_stand_beta_01.npy",local)
     
     
-if factorized == False:
-    numpy.save("Data/local_stand_beta_01.npy",local)
-   
-"""
-    
+        
