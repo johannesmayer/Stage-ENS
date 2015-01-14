@@ -35,13 +35,13 @@ def magnetisation(S):
         
 factorized = True
         
-N_iter = 2**20  
+N_iter = 2**20
 
 
 L = 6
 N = L*L
-beta = math.log(1+math.sqrt(2))/2
-
+#beta = math.log(1+math.sqrt(2))/2
+beta = 0.1
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 S=[random.choice([-1,1]) for k in range(N)]
@@ -83,18 +83,20 @@ for i_sweep in range(N_iter):
     energies.append(internal_energy/N)
     magnetisations.append(magnetisation([S]))
 print("Internal Energy pp: " + str(numpy.mean(energies)))
-print("acceptance ratio: " + str(accept_index/N_iter))
-        
+print("Magnetisation pp: " + str(numpy.mean(magnetisations)))
+print("acceptance ratio: " + str(accept_index/N_iter))       
             
     
 print("Duration: "+str(time.time() - start_time))    
 
+local = [energies, magnetisations]
+
 if factorized == True:
-    numpy.save("Data/energies_local_fact_beta_crit.npy",energies)
-    numpy.save("Data/magnetisations_local_fact_beta_crit.npy",magnetisations)
+    numpy.save("Data/local_fact_beta_01.npy",local)
+    
     
 if factorized == False:
-    numpy.save("Data/energies_local_stand_beta_crit.npy",energies)
-    numpy.save("Data/magnetisations_local_stand_beta_crit.npy",magnetisations)
+    numpy.save("Data/local_stand_beta_01.npy",local)
+   
 
     

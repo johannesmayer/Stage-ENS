@@ -1,4 +1,4 @@
-import numpy, math, random, time, matplotlib.pyplot as plt
+import numpy, math, random, time
 
 start_time = time.time()
 
@@ -45,7 +45,8 @@ def fact_accept(p,beta,n1,n2):
 
 L=6
 N=L*L
-beta=0.5
+beta=math.log(1+math.sqrt(2))/2
+#beta = 0.1
 S=[random.choice([-1,1]) for k in range(N)]
 
 
@@ -54,9 +55,9 @@ acceptance_index = 0.0
 factorized = False
 
 
-N_iter = 2**14
+N_iter = 2**15
 #p = 1-math.exp(-2*beta)
-p = 0.6
+p = 0.5
 
 energies = []
 magnetisations = []
@@ -114,15 +115,16 @@ for i_sweep in range(N_iter):
         internal_energy = internal_energy + 2*n_two - 2*n_one
     #energies.append(energy(S,nbr))
     energies.append(internal_energy/N)
-    magnetisations.append(magnetisation[S]) 
+    magnetisations.append(magnetisation(S)) 
 print("Mean energy per particle: "+str(numpy.mean(energies))) 
+print("Magnetisation pp: " + str(numpy.mean(magnetisations)))
 print("Cluster flip Acceptance:"+str(acceptance_index/N_iter))   
     
 print("Duration: "+str(time.time()-start_time))  
 
+clust = [energies,magnetisations]
+
 if factorized == True:
-    numpy.save("Data/energies_cluster_fact_beta_crit",energies)
-    numpy.save("Data/magnetisation_cluster_fact_beta_crit",magnetisations)
+    numpy.save("Data/cluster_fact_beta_crit_p0_5.npy",clust)
 else:
-    numpy.save("Data/energies_cluster_stand_beta_crit",energies)
-    numpy.save("Data/magnetisation_cluster_stand_beta_crit",magnetisations)
+    numpy.save("Data/cluster_stand_beta_crit_p0_5.npy",clust)
