@@ -7,11 +7,12 @@ def autocorrelation(my_list, delta):
    
 # give the standard metropolis data to data1 and the factorized one to data2   
 
-stand_title = ""
-fact_title = ""
+is_cluster = False
+stand_title = "local_stand_beta_crit.npy"
+fact_title = "local_fact_beta_crit.npy"
 
-data1 = numpy.load("/Users/johannesmayer/GitHub/Stage-ENS/ApplicationFactorized/Simulations/Data/"+str(stand_title))
-data2 = numpy.load("/Users/johannesmayer/GitHub/Stage-ENS/ApplicationFactorized/Simulations/Data/"+str(fact_title))
+data1 = numpy.load("/Users/johannesmayer/GitHub/Stage-ENS/ApplicationFactorized/Simulations/Data/"+stand_title)
+data2 = numpy.load("/Users/johannesmayer/GitHub/Stage-ENS/ApplicationFactorized/Simulations/Data/"+fact_title)
 
 
 
@@ -21,7 +22,7 @@ e_data2 = data2[0]
 m_data1 = data1[1]
 m_data2 = data2[1]
 
-is_cluster = False
+
 
 axis = []
 
@@ -31,12 +32,14 @@ e_correlation_function_fact = []
 m_correlation_function_stand = []
 m_correlation_function_fact = []
 
-
 e_mean_stand = numpy.mean(e_data1)
 e_mean_fact = numpy.mean(e_data2)
 
 e_variance_stand = numpy.mean(e_data1*e_data1)
 e_variance_fact = numpy.mean(e_data2*e_data2)
+
+
+
 
 m_correlation_function_stand = []
 m_correlation_function_fact = []
@@ -48,11 +51,11 @@ m_variance_stand = numpy.mean(m_data1*m_data1)
 m_variance_fact = numpy.mean(m_data2*m_data2)
 
 
-correlation_max = 2500
+correlation_max = 1000
 stepsize = 1
 if is_cluster == False:
     stepsize = 10
-
+    correlation_max = 10000
 
 for index in range(1,correlation_max,stepsize):
     if index % 11 == 0:
@@ -65,9 +68,7 @@ for index in range(1,correlation_max,stepsize):
     m_correlation_function_fact.append((autocorrelation(m_data2,index)-m_mean_fact**2 )/ (m_variance_fact - m_mean_fact**2))
     
     axis.append(index)
-    
-    
-    
+ 
 
 correlation_stand = [axis, e_correlation_function_stand, m_correlation_function_stand]
 correlation_fact = [axis, e_correlation_function_fact, m_correlation_function_stand]
