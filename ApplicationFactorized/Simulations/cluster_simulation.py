@@ -28,7 +28,11 @@ def energy(S,nbr):
         h = sum(S[nbr[index][j]] for j in range(4))
         en += -S[index]*h/2
     return en
-    
+
+def magnetisation(S):
+    magn = numpy.mean(S)
+    return magn    
+            
 def accept(p,beta,n1,n2):
     prob = min(1,(1-p)**(n1-n2)*math.exp(-2*beta*(n2-n1)))
     return prob
@@ -36,6 +40,8 @@ def accept(p,beta,n1,n2):
 def fact_accept(p,beta,n1,n2):
     prob = ((min(1, math.exp(2*beta)*(1-p)))**n1)*((min(1, math.exp(-2*beta)/(1-p)))**n2)        
     return prob                    
+
+
 
 L=6
 N=L*L
@@ -45,7 +51,7 @@ S=[random.choice([-1,1]) for k in range(N)]
 
 acceptance_index = 0.0
 
-factorized = True
+factorized = False
 
 
 N_iter = 2**14
@@ -53,7 +59,7 @@ N_iter = 2**14
 p = 0.6
 
 energies = []
-energy_errors = []
+magnetisations = []
 
 nbr,site_dic,x_y_dic=square_neighbors(L)
 internal_energy = energy(S,nbr)
@@ -108,10 +114,15 @@ for i_sweep in range(N_iter):
         internal_energy = internal_energy + 2*n_two - 2*n_one
     #energies.append(energy(S,nbr))
     energies.append(internal_energy/N)
-
+    magnetisations.append(magnetisation[S]) 
 print("Mean energy per particle: "+str(numpy.mean(energies))) 
 print("Cluster flip Acceptance:"+str(acceptance_index/N_iter))   
     
 print("Duration: "+str(time.time()-start_time))  
 
-numpy.save("/Users/johannesmayer/GitHub/Stage-ENS/ApplicationFactorized/Simulations/Data/factorized_cluster_energies_beta_0_5.npy",energies)
+if factorized == True:
+    numpy.save("Data/energies_cluster_fact_beta_crit",energies)
+    numpy.save("Data/magnetisation_cluster_fact_beta_crit",magnetisations)
+else:
+    numpy.save("Data/energies_cluster_stand_beta_crit",energies)
+    numpy.save("Data/magnetisation_cluster_stand_beta_crit",magnetisations)
