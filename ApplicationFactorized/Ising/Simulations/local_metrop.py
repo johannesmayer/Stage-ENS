@@ -32,16 +32,25 @@ def energy(S,nbr):
 def magnetisation(S):
     magn = numpy.mean(S)
     return magn
-        
-factorized = False
-        
+    
+
+factorized = sys.argv[1]
+
+if factorized == "Standard":
+    factorized = False
+if factorized == "Factorized":
+    factorized = True
+                              
 N_iter = 2**20
 
 
 L = 6
 N = L*L
 
-beta = float(sys.argv[1])
+print N
+
+beta = float(sys.argv[2])
+
 #beta = math.log(1+math.sqrt(2))/2
 #beta = 0.1
 
