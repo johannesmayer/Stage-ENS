@@ -41,13 +41,11 @@ if factorized == "Standard":
 if factorized == "Factorized":
     factorized = True
                               
-N_iter = 2**20
+N_iter = 2**22
 
 
 L = 6
 N = L*L
-
-print N
 
 beta = float(sys.argv[2])
 
@@ -92,7 +90,7 @@ for i_sweep in range(N_iter):
         internal_energy = internal_energy - 2*h*S[k]
         accept_index += 1
     energies.append(internal_energy/N)
-    magnetisations.append(magnetisation([S]))
+    magnetisations.append(numpy.absolute(magnetisation([S])))
     
 print("Internal Energy pp: " + str(numpy.mean(energies)))
 print("Magnetisation pp: " + str(numpy.mean(magnetisations)))

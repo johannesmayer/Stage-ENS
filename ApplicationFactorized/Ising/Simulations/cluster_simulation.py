@@ -50,6 +50,7 @@ beta = float(sys.argv[2])
 #beta = 0.1
 S=[random.choice([-1,1]) for k in range(N)]
 
+cluster_sizes = []
 
 acceptance_index = 0.0
 
@@ -60,12 +61,7 @@ if factorized == "Standard":
 if factorized == "Factorized":
     factorized = True
 
-
-
-factorized = True
-
-
-N_iter = 2**15
+N_iter = 2**17
 #p = 1-math.exp(-2*beta)
 p = 0.5
 
@@ -100,6 +96,7 @@ for i_sweep in range(N_iter):
         for spin in cluster:
             if spin in outer_edge:
                 outer_edge.remove(spin) 
+                
     n_one= 0.0
     n_two= 0.0
     #recall that n_1+n_2 != len(outer_edge) because of outer edge spins with multiple neighbors
@@ -120,15 +117,22 @@ for i_sweep in range(N_iter):
         
     if random.uniform(0.,1.) < upsilon:
         acceptance_index += 1
+        cluster_sizes.append(N_cluster)
         for k in cluster:
             S[k] = -S[k]
         internal_energy = internal_energy + 2*n_two - 2*n_one
+    #print(acceptance_index)
+    #print N_cluster
+    #print sum(S)
+    #print()
     #energies.append(energy(S,nbr))
     energies.append(internal_energy/N)
-    magnetisations.append(magnetisation(S)) 
+    magnetisations.append(numpy.absolute(magnetisation(S)))
 print("Mean energy per particle: "+str(numpy.mean(energies))) 
 print("Magnetisation pp: " + str(numpy.mean(magnetisations)))
 print("Cluster flip Acceptance:"+str(acceptance_index/N_iter))   
+
+print("Average Cluster Size: "+str(numpy.mean(cluster_sizes)))
     
 print("Duration: "+str(time.time()-start_time))  
 
@@ -136,5 +140,5 @@ clust = [energies,magnetisations]
 
 if factorized == True:
     numpy.save("DataAnalysis/SimulationData/cluster_fact_beta_"+str(beta)[:6]+"p_"+str(p)+".npy",clust)
-else:
+if factorized == False:
     numpy.save("DataAnalysis/SimulationData/cluster_stand_beta_"+str(beta)[:6]+"p_"+str(p)+".npy",clust)

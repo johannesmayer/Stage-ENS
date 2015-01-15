@@ -104,11 +104,12 @@ for factorized_algo in use_factorized:
     
     local = ["Energy: "+str(numpy.mean(energies)), "Magnetization: "+str(numpy.mean(magnetisations))]
     local = [numpy.mean(energies), numpy.mean(magnetisations)]
+    
     if factorized_algo == True:
-        numpy.savetxt("SimulatedData/spinglass_local_fact_"+str(beta),local)
+        numpy.save("SimulatedData/spinglass_local_fact_"+str(beta),local)
         
     if factorized_algo == False:
-        numpy.savetxt("SimulatedData/spinglass_local_stand_"+str(beta),local)
+        numpy.save("SimulatedData/spinglass_local_stand_"+str(beta),local)
     
     
         
