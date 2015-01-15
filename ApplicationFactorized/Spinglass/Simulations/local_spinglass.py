@@ -42,7 +42,7 @@ def magnetisation(S):
     
 use_factorized = [True,False]
 
-N_iter = 2**2
+N_iter = 2**20
 
 L = 6
 N = L*L
@@ -102,14 +102,13 @@ for factorized_algo in use_factorized:
         
     print("Duration: "+str(time.time() - start_time))    
     
-    local = ["Energy: "+str(numpy.mean(energies)), "Magnetization: "+str(numpy.mean(magnetisations))]
-    local = [numpy.mean(energies), numpy.mean(magnetisations)]
+    local = [energies, magnetisations]
     
     if factorized_algo == True:
-        numpy.save("SimulatedData/spinglass_local_fact_"+str(beta),local)
+        numpy.save("DataAnalysis/SimulationData/spinglass_local_fact_beta_"+str(beta)+".npy",local)
         
     if factorized_algo == False:
-        numpy.save("SimulatedData/spinglass_local_stand_"+str(beta),local)
+        numpy.save("DataAnalysis/SimulationData/spinglass_local_stand_beta_"+str(beta)+".npy",local)
     
     
         
