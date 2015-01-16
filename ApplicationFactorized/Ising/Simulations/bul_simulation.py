@@ -1,4 +1,4 @@
-import math, random, numpy
+import math, random, numpy, sys
 
 def square_neighbors(L):
    N = L*L
@@ -93,24 +93,74 @@ def built_probs(N,beta,is_fact):
             else:
                 p[k] = p[9-k]
     return p 
-                                                                                   
-L = 6
+
+def f_function(class_number):
+    value = (class_number+5)%10 
+    return value  
+ 
+def g_function(j,class_number):
+    next_class = 0.0
+    if j in range(0,5):
+        next_class = class_number + 1
+    if j in range(5,10):
+        next_class = class_number -1
+    return next_class
+        
+            
+                      
+                
+############################################################################## 
+""" 
+use_factorized = sys.argv[1]
+
+if use_factorized == "Factorized":
+    use_factorized = True
+if use_factorized == "Standard":
+    use_factorized =False
+""" 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+L = 3
 N = L*L
-beta = 0.1
-
-N_iter = 2**8
+#beta = sys.argv[2]
 
 
+beta = 1.
+use_factorized = True
+
+
+N_iter = 2**10
 
 nbr, site_ic, x_y_dic = square_neighbors(L)
 S = [[random.choice([-1,1]),0] for j in range(N)]
 
 class_members = compute_classes(S,nbr)
-probs = built_probs(N,beta,False)
+probs = built_probs(N,beta,use_factorized)
+current_probs = numpy.zeros(10)
 tower = built_tower(probs)
 
+time = 0
 
-
-
-
+for i_sweep in range(N_iter):
+    #FIRST CALCULATE AT WHICH TIME TO FLIP THE FIRST SPIN
+    for k in range(10):
+        current_probs[k] = len(class_members[k])*probs[k] 
+    reject = 1 - sum(current_probs)
+    delta_t = 1 + int(math.log(random.uniform(0.,1.))/math.log(reject))
+    #TOWER SAMPLE WHICH CLASS SHOULD BE FLIPPED AND THEN TAKE A RANDOM SPIN OF THAT CLASS
+    #REMOVE THAT SPIN FROM THAT CLASS AND SEND IT TO f(whichclass)
+    which_class = towersample(built_tower(current_probs))
+    flip_spin = random.choice(class_members[which_class])
+    
+    for neigh in nbr[flip_spin]:
+        class_members[S[neigh][1]].remove(neigh)
+        c_m = g_function(which_class,S[neigh][1])
+        class_members[c_m].append(neigh)
+        S[neigh][1] = c_m
+    
+    class_members[which_class].remove(flip_spin)
+    class_members[f_function(which_class)].append(flip_spin)
+    S[flip_spin][1] = f_function(which_class)
+    
+            
+    
 
