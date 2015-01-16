@@ -82,14 +82,14 @@ def built_probs(N,beta,is_fact):
     if is_fact == True:
         for k in range(10):
             if k < 5:
-                p[k] = (1/float(N)) * (min(1,math.exp(-2*beta))**(4-k))
+                p[k] =  (min(1.,math.exp(-2.*beta))**(4-k))
             else:
                 p[k] = p[9-k] 
            
     if is_fact == False:                        
         for k in range(10):
             if k < 5:
-                p[k] = (1/float(N)) * (min(1,math.exp(-2*beta*(2-k))))
+                p[k] = (min(1,math.exp(-2*beta*(2-k))))
             else:
                 p[k] = p[9-k]
     return p 
@@ -106,8 +106,14 @@ def g_function(j,class_number):
         next_class = class_number -1
     return next_class
         
-            
-                      
+def magnetisation(S):
+    spins = []
+    for k in range(len(S)):
+        spins.append(S[k][0])
+
+
+    mag = numpy.mean(spins)
+    return mag                
                 
 ############################################################################## 
 """ 
@@ -119,16 +125,17 @@ if use_factorized == "Standard":
     use_factorized =False
 """ 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-L = 3
+L = 6
 N = L*L
 #beta = sys.argv[2]
 
 
-beta = 1.
-use_factorized = True
+
+beta = 0.05
+use_factorized = False
 
 
-N_iter = 2**10
+N_iter = 2**14
 
 nbr, site_ic, x_y_dic = square_neighbors(L)
 S = [[random.choice([-1,1]),0] for j in range(N)]
@@ -136,16 +143,31 @@ S = [[random.choice([-1,1]),0] for j in range(N)]
 class_members = compute_classes(S,nbr)
 probs = built_probs(N,beta,use_factorized)
 current_probs = numpy.zeros(10)
-tower = built_tower(probs)
 
 time = 0
+flip_times = []
 
-for i_sweep in range(N_iter):
+magnetisations = []
+time_max = 2**20
+
+print N*probs 
+
+
+
+for time in range(time_max):
+    if time % 5000 == 1:
+        print("Time: "+str(time)+"/"+str(time_max))
+        print("Current Magnetisation: "+str(magnetisation(S)))
     #FIRST CALCULATE AT WHICH TIME TO FLIP THE FIRST SPIN
     for k in range(10):
         current_probs[k] = len(class_members[k])*probs[k] 
-    reject = 1 - sum(current_probs)
-    delta_t = 1 + int(math.log(random.uniform(0.,1.))/math.log(reject))
+    reject = 1. - sum(current_probs)/float(N)
+    if reject < 0.001:
+        print("ATTENTION SMALL REJECT: "+str(reject))
+        print(S)
+    delta_t = 1
+    if reject != 0:
+        delta_t = 1 + int(math.log(random.uniform(0.,1.))/math.log(reject))
     #TOWER SAMPLE WHICH CLASS SHOULD BE FLIPPED AND THEN TAKE A RANDOM SPIN OF THAT CLASS
     #REMOVE THAT SPIN FROM THAT CLASS AND SEND IT TO f(whichclass)
     which_class = towersample(built_tower(current_probs))
@@ -160,7 +182,15 @@ for i_sweep in range(N_iter):
     class_members[which_class].remove(flip_spin)
     class_members[f_function(which_class)].append(flip_spin)
     S[flip_spin][1] = f_function(which_class)
+    S[flip_spin][0] = -S[flip_spin][0]
+    time = time + delta_t
+    mag = magnetisation(S)
+    flip_times.append(delta_t)
+    for index in range(delta_t):
+        magnetisations.append(mag)
     
-            
+print("Average flipping time: "+str(numpy.mean(flip_times)))
     
-
+print("Average magnetisation: "+str(numpy.mean(numpy.absolute(magnetisations))))   
+    
+#numpy.save(DataAnalysis/SimulationData/)
