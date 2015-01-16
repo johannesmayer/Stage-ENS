@@ -1,4 +1,8 @@
-import math, random, numpy, sys
+# -*- coding: utf-8 -*-
+
+import math, random, numpy, time, sys
+
+start_time = time.time()
 
 def square_neighbors(L):
    N = L*L
@@ -113,8 +117,14 @@ def magnetisation(S):
 
 
     mag = numpy.mean(spins)
-    return mag                
-                
+    return mag   
+                 
+def energy(S,nbr):
+    ene = 0.0
+    for index in range(len(S)):
+        h = sum(S[nbr[index][j]][0] for j in range(4))
+        ene += -h*S[index][0]/2
+    return ene
 ############################################################################## 
 """ 
 use_factorized = sys.argv[1]
@@ -131,11 +141,8 @@ N = L*L
 
 
 
-beta = 0.05
-use_factorized = False
-
-
-N_iter = 2**14
+beta = 0.5
+use_factorized = True
 
 nbr, site_ic, x_y_dic = square_neighbors(L)
 S = [[random.choice([-1,1]),0] for j in range(N)]
@@ -144,19 +151,21 @@ class_members = compute_classes(S,nbr)
 probs = built_probs(N,beta,use_factorized)
 current_probs = numpy.zeros(10)
 
-time = 0
+curr_time = 0
 flip_times = []
 
 magnetisations = []
-time_max = 2**20
+energies = []
 
-print N*probs 
+time_max = 2**1
 
 
 
-for time in range(time_max):
-    if time % 5000 == 1:
-        print("Time: "+str(time)+"/"+str(time_max))
+
+
+while curr_time < time_max:
+    if curr_time // 10000 == 1:
+        print("Time: "+str(curr_time)+"/"+str(time_max))
         print("Current Magnetisation: "+str(magnetisation(S)))
     #FIRST CALCULATE AT WHICH TIME TO FLIP THE FIRST SPIN
     for k in range(10):
@@ -164,10 +173,24 @@ for time in range(time_max):
     reject = 1. - sum(current_probs)/float(N)
     if reject < 0.001:
         print("ATTENTION SMALL REJECT: "+str(reject))
-        print(S)
     delta_t = 1
     if reject != 0:
         delta_t = 1 + int(math.log(random.uniform(0.,1.))/math.log(reject))
+    
+    curr_time = curr_time + delta_t
+    flip_times.append(delta_t)
+    
+    mag = magnetisation(S)
+    ene = energy(S,nbr)/float(N)
+    
+    len_mag = len(magnetisations)
+        
+    if curr_time <= time_max:
+        magnetisations.extend([mag]*delta_t)
+        energies.extend([ene]*delta_t)
+    else:
+        magnetisations.extend([mag]*(time_max-(curr_time-delta_t)))
+        energies.extend([mag]*(time_max-(curr_time-delta_t))) 
     #TOWER SAMPLE WHICH CLASS SHOULD BE FLIPPED AND THEN TAKE A RANDOM SPIN OF THAT CLASS
     #REMOVE THAT SPIN FROM THAT CLASS AND SEND IT TO f(whichclass)
     which_class = towersample(built_tower(current_probs))
@@ -183,14 +206,20 @@ for time in range(time_max):
     class_members[f_function(which_class)].append(flip_spin)
     S[flip_spin][1] = f_function(which_class)
     S[flip_spin][0] = -S[flip_spin][0]
-    time = time + delta_t
-    mag = magnetisation(S)
-    flip_times.append(delta_t)
-    for index in range(delta_t):
-        magnetisations.append(mag)
+    
+    
+    
     
 print("Average flipping time: "+str(numpy.mean(flip_times)))
-    
-print("Average magnetisation: "+str(numpy.mean(numpy.absolute(magnetisations))))   
-    
-#numpy.save(DataAnalysis/SimulationData/)
+
+print("Average magnetisation: "+str(numpy.mean(numpy.absolute(magnetisations))))
+print("Average energy: "+str(numpy.mean(energies)))
+
+
+print("Duration: "+str(time.time() - start_time))    
+""" 
+if use_factorized == True:
+    numpy.save("DataAnalysis/SimulationData/fttc.fact.beta_"+str(beta)+".npy")
+if use_factorized == False:
+    numpy.save("DataAnalysis/SimulationData/fttc.stand.beta_"+str(beta)+".npy")
+"""
