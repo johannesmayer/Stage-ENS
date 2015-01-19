@@ -6,6 +6,11 @@ def autocorrelation(my_list, delta):
     return mean
    
 
+if len(sys.argv) != 4:
+    sys.exit("########### WRONG INPUT! ############ GIVE ME THE INPUT IN THE ORDER: <Cluster/Local> _ <standard-file in SimulationData> _ <factorized-file in SimulationData>")
+
+
+
 is_cluster = sys.argv[1]
 stand_title = sys.argv[2]   
 fact_title = sys.argv[3]    

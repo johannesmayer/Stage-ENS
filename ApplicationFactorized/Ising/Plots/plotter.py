@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy, matplotlib.pyplot as plt, sys
 
+if len(sys.argv) != 5:
+    sys.exit("######### WRONG INPUT ########### GIVE ME THE INPUT IN THE FOLLOWING ORDER: <Clusterplot / Localplot> _ <standard-file from AnalysisData> _ <factorized file form AnalysisData> _ <Diagram Title involving the Temperature>")
+
 is_cluster = sys.argv[1]
 
 if is_cluster == "Clusterplot":
@@ -17,6 +20,8 @@ else:
     
 stand_title = sys.argv[2]
 fact_title = sys.argv[3]
+diagram_title = sys.argv[4]
+
 
 #standard to first argument and factorized to 2nd one 
 corr_stand = numpy.load("AnalysisData/"+stand_title)
@@ -57,7 +62,7 @@ ax1 = fig1.add_subplot(111)
 ax1.plot(e_act_axis,e_act_autocorrelator_stand,'gx-',label='Standard Data')
 ax1.plot(e_act_axis,e_act_autocorrelator_fact,'r-',label='Factorized-Filter Data')
 
-ax1.set_title("Plot of ene autocorr. for "+stand_title)
+ax1.set_title("Energy Autocorrelator"+diagram_title)
 ax1.set_xlabel("Attempted "+isitcluster+" Flips")
 ax1.set_ylabel("Autocorrelator")
 ax1.set_yscale('log')
@@ -69,7 +74,7 @@ ax2 = fig2.add_subplot(111)
 ax2.plot(m_act_axis,m_act_autocorrelator_stand,'gx-',label='Standard Data')
 ax2.plot(m_act_axis,m_act_autocorrelator_fact,'r-',label='Factorized-Filter Data')
 
-ax2.set_title("Plot of mag autocorr. for "+stand_title)
+ax2.set_title("Magnetisation Autocorrelator"+diagram_title)
 ax2.set_xlabel("Attempted "+isitcluster+" Flips")
 ax2.set_ylabel("Autocorrelator")
 ax2.set_yscale('log')

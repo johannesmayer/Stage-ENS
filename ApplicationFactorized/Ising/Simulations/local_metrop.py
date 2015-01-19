@@ -34,6 +34,9 @@ def magnetisation(S):
     return magn
     
 
+if len(sys.argv) != 3:
+    sys.exit("############# WRONG INPUT ############## GIVE ME THE INPUT <Standard/Factorized> _ <beta>")
+
 factorized = sys.argv[1]
 
 if factorized == "Standard":

@@ -43,6 +43,10 @@ def fact_accept(p,beta,n1,n2):
 
 
 
+if len(sys.argv) != 3:
+    sys.exit("############# WRONG INPUT ############## GIVE ME THE INPUT <Standard/Factorized> _ <beta>")
+
+
 L=6
 N=L*L
 beta = float(sys.argv[2])
