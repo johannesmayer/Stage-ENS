@@ -20,7 +20,7 @@ def energy(J,x):
     ene = -J*math.cos(x)
     return ene
 
-def mapping(delta_phi):
+def mirror(delta_phi):
     psi = math.pi - (delta_phi + math.pi)%(2*math.pi)
     return psi
 
@@ -35,7 +35,7 @@ energy_max = energy(J,math.pi)
 all_collisions = []
 
 maximal_displacement = 10*twopi
-n_times = 10**4
+n_times = 10**5
 
 
 ############+############+############+############+############+############+
@@ -57,16 +57,14 @@ for index in range(n_times):
     
 #+++++++++++++initialize the two spins at a random positions +++++++++++++++#
     
-    initial_angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
-    initial_lift = random.choice([0,1])
+    angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
+    lift = random.choice([0,1])
     
     total_displacement = 0.0
     these_collisions = []
-    
+    these_collisions.append(angles[:])
 #+++++++++++++now take care of the the angles and the displacement +++++++++++++++#
     
-    angles = initial_angles[:]
-    lift = initial_lift
     
     
 #+++++ GIVE THE TWO SPINS AN ENERGY ACCORDING TO PETERS PAPER ++++++#
@@ -78,7 +76,7 @@ for index in range(n_times):
     while total_displacement < maximal_displacement:
         delta_phi = angles[0] - angles[1]
         upsilon = random.uniform(0.,1.)
-        random_energy = -1/beta*math.log(upsilon)
+        random_energy = -(1/beta)*math.log(upsilon)
         
 #+++ TEST HOW OFTEN THEY CAN CROSS THE COMPLETE POTENTIAL WITH THAT ENERGY AND STORE REST +++#
     
@@ -102,8 +100,8 @@ for index in range(n_times):
                     
                 else:
                     if energy_max-energy(J,delta_phi) > rest_energy:
-                        #first mirror the delta phi onto its correct value between zero and pi
-                        delta_phi = mapping(delta_phi)
+                        #first mirror the delta phi onto its correct value between zero and pi so one can "walk up the hill to the right"
+                        delta_phi = mirror(delta_phi)
                         phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                     else:             
                         phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
@@ -114,21 +112,11 @@ for index in range(n_times):
                      
                 else:
                     displacement = (maximal_displacement - total_displacement) 
-                
-                if displacement < 0:
-                    print str(1)
-                    print("DISPLACEMENT: "+str(displacement))  
-                    print("RANDOM ENERGY: "+str(random_energy))
-                    print("CROSSING TIMES: "+str(valley_crossing_number))
-                    print("REST ENERGY: "+str(rest_energy))
-                    print("Lift: "+str(lift))
-                    print("Angles: "+str(angles))
-                
+                                
                 total_displacement += displacement   
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-                
                 
 ############################################################################
 #### IF YOU MOVE PHI2 THEN FOR NEGATIVE ∆PHI MOVE RIGHT IN THE POTENTIAL ### 
@@ -156,15 +144,6 @@ for index in range(n_times):
                 else:
                     displacement = (maximal_displacement - total_displacement) 
                 
-                if displacement < 0:
-                    print str(2)
-                    print("DISPLACEMENT: "+str(displacement))
-                    print("RANDOM ENERGY: "+str(random_energy))
-                    print("CROSSING TIMES: "+str(valley_crossing_number))
-                    print("REST ENERGY: "+str(rest_energy))
-                    print("Lift: "+str(lift))
-                    print("Angles: "+str(angles))
-                
                 total_displacement += displacement   
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
@@ -173,10 +152,10 @@ for index in range(n_times):
                 
                 
             
-################################################################
-###+++     HERE IT IS JUST THE EXACT OTHER WAY AROUND     +++###
-################################################################
-        else:
+#####################################################################
+###+++FOR POSITIVE ∆PHI IT IS JUST THE EXACT OTHER WAY AROUND +++###
+####################################################################
+        elif delta_phi > 0:
             delta_phi = delta_phi % twopi
             if lift == 0:
                 phi_bullet = 0
@@ -198,16 +177,6 @@ for index in range(n_times):
                      
                 else:
                     displacement = (maximal_displacement - total_displacement) 
-                
-                if displacement < 0:
-                    print str(3)
-                    print("DISPLACEMENT: "+str(displacement))
-                    print("RANDOM ENERGY: "+str(random_energy))
-                    print("CROSSING TIMES: "+str(valley_crossing_number))
-                    print("REST ENERGY: "+str(rest_energy))
-                    print("Lift: "+str(lift))
-                    print("Angles: "+str(angles))
-                
                 total_displacement += displacement   
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
@@ -223,7 +192,7 @@ for index in range(n_times):
                     
                 else:
                     if energy_max-energy(J,delta_phi) > rest_energy:
-                        delta_phi = mapping(delta_phi)
+                        delta_phi = mirror(delta_phi)
                         phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                     else:             
                         phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
@@ -235,21 +204,12 @@ for index in range(n_times):
                 else:
                     displacement = (maximal_displacement - total_displacement) 
                 
-                if displacement < 0:
-                    print str(4)
-                    print("DISPLACEMENT: "+str(displacement))
-                    print("RANDOM ENERGY: "+str(random_energy))
-                    print("CROSSING TIMES: "+str(valley_crossing_number))
-                    print("REST ENERGY: "+str(rest_energy))
-                    print("Lift: "+str(lift))
-                    print("Angles: "+str(angles))
-                
                 total_displacement += displacement   
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-            
+
     all_collisions.append(these_collisions[:])            
 numpy.save("2 Particle Data/two_spins.npy",all_collisions)
-
+#numpy.save("two_spins.npy",all_collisions)
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")

@@ -13,8 +13,8 @@ corr_fact = numpy.load("AnalysisData/"+fact_title)
 e_axis = corr_stand[0]
 m_axis = corr_stand[0]
 
-e_index = e_axis < 300 
-m_index = m_axis < 300
+e_index = e_axis < 800 
+m_index = m_axis < 800
     
 e_act_axis = e_axis[e_index]
 m_act_axis = m_axis[m_index]
@@ -56,7 +56,8 @@ ax2.set_ylabel("Autocorrelator")
 ax2.set_yscale('log')
 ax2.legend(loc='lower left', shadow=True)
 
-#fig1.savefig("Images/plot_of_enecorr"+stand_title[:-4]+".png")
-#fig2.savefig("Images/plot_of_magcorr"+stand_title[:-4]+".png")
+
+fig1.savefig("Images/plot_of_enecorr_fttc_beta"+diagram_title+".png")
+fig2.savefig("Images/plot_of_magcorr_fttc_beta_"+diagram_title+".png")
 
 plt.show()

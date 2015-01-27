@@ -36,8 +36,8 @@ if is_cluster == True:
     e_index = e_axis < 100
     m_index = m_axis < 100
 else:
-    e_index = e_axis < 300
-    m_index = m_axis < 300
+    e_index = e_axis < 800
+    m_index = m_axis < 800
     
 e_act_axis = e_axis[e_index]
 m_act_axis = m_axis[m_index]
