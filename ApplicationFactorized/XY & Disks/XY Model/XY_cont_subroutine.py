@@ -36,7 +36,7 @@ energy_max = energy(J,math.pi)
 all_collisions = []
 
 maximal_displacement = 1*twopi
-n_times = 10**4
+n_times = 10**5
 
 ############+############+############+############+############+############+
 """
@@ -108,7 +108,7 @@ for index in range(n_times):
                 if energy_max-energy(J,delta_phi) > rest_energy:
                     phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
    	        else:             
-                    phi_star = delta_phi + math.pi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
+                    phi_star = twopi - delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
                 
             displacement = 0.0
             if total_displacement + phi_bullet + phi_star + valley_crossing_number*twopi < maximal_displacement :
@@ -139,7 +139,7 @@ for index in range(n_times):
                 if energy_max-energy(J,delta_phi) > rest_energy:                    
                     phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                 else:             
-                    phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
+                    phi_star = twopi - delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
             
             displacement = 0.0
             if total_displacement + phi_bullet + phi_star + valley_crossing_number*twopi < maximal_displacement :

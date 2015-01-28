@@ -36,7 +36,7 @@ for i_sweep in range(len(all_data)):
 # calculate the average energy    
     data = all_data[i_sweep]     
     delta_phis.append((data[len(data)-1][0]-data[len(data)-1][1])%twopi)    
-
+    
 
 h,b = numpy.histogram(delta_phis,bins = 100, normed = True)
 b = 0.5 * (b[1:]+b[:-1])
