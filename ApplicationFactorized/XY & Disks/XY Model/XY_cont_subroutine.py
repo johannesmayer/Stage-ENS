@@ -35,8 +35,8 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 2*twopi
-n_times = 10**0
+maximal_displacement = 1*twopi
+n_times = 10**4
 
 ############+############+############+############+############+############+
 """
@@ -76,7 +76,6 @@ for index in range(n_times):
 ################################################################################
     
     while total_displacement < maximal_displacement:
-        print lift
         delta_phi = angles[0] - angles[1]
         upsilon = random.uniform(0.,1.)
         random_energy = -(1/beta)*math.log(upsilon)
@@ -157,6 +156,5 @@ for index in range(n_times):
         
             
     all_collisions.append(these_collisions[:])   
-print all_collisions    
 numpy.save("2 Particle Data/two_spins.npy",all_collisions)
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")
