@@ -20,7 +20,7 @@ def energy(J,x):
     ene = -J*math.cos(x)
     return ene
 
-def mapping(delta_phi):
+def mirror(delta_phi):
     psi = math.pi - (delta_phi + math.pi)%(2*math.pi)
     return psi
 
@@ -100,8 +100,8 @@ for index in range(n_times):
                     
                 else:
                     if energy_max-energy(J,delta_phi) > rest_energy:
-                        #first mirror the delta phi onto its correct value between zero and pi
-                        delta_phi = mapping(delta_phi)
+                        #first mirror the delta phi onto its correct value between zero and pi so one can "walk up the hill to the right"
+                        delta_phi = mirror(delta_phi)
                         phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                     else:             
                         phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
@@ -117,7 +117,6 @@ for index in range(n_times):
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-                print("TOTAL DISPLACEMENT: "+str(total_displacement))
                 
 ############################################################################
 #### IF YOU MOVE PHI2 THEN FOR NEGATIVE ∆PHI MOVE RIGHT IN THE POTENTIAL ### 
@@ -149,14 +148,13 @@ for index in range(n_times):
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-                print("TOTAL DISPLACEMENT: "+str(total_displacement))
                 
                 
                 
             
-################################################################
-###+++     HERE IT IS JUST THE EXACT OTHER WAY AROUND     +++###
-################################################################
+#####################################################################
+###+++FOR POSITIVE ∆PHI IT IS JUST THE EXACT OTHER WAY AROUND +++###
+####################################################################
         elif delta_phi > 0:
             delta_phi = delta_phi % twopi
             if lift == 0:
@@ -183,7 +181,6 @@ for index in range(n_times):
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-                print("TOTAL DISPLACEMENT: "+str(total_displacement))
                 
             elif lift == 1:
                 phi_bullet = 0
@@ -195,7 +192,7 @@ for index in range(n_times):
                     
                 else:
                     if energy_max-energy(J,delta_phi) > rest_energy:
-                        delta_phi = mapping(delta_phi)
+                        delta_phi = mirror(delta_phi)
                         phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                     else:             
                         phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
@@ -211,10 +208,8 @@ for index in range(n_times):
                 angles[lift] = (angles[lift] + displacement)%twopi 
                 lift = (lift+1)%2  
                 these_collisions.append(angles[:])
-                print("TOTAL DISPLACEMENT: "+str(total_displacement))
 
     all_collisions.append(these_collisions[:])            
 numpy.save("2 Particle Data/two_spins.npy",all_collisions)
-print all_collisions
 #numpy.save("two_spins.npy",all_collisions)
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")
