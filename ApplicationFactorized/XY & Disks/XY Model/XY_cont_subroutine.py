@@ -35,7 +35,7 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 50*math.pi
+maximal_displacement = 2*math.pi
 n_times = 10**0
 ############+############+############+############+############+############+
 """
@@ -127,8 +127,9 @@ for index in xrange(n_times):
             # modulo two pi
             # make sure that if one would go around too often and violate the chain length one 
             # needs to save a different number of times one actually went in a circle
-            while valley_crossing_number*twopi > maximal_displacement:
+            while valley_crossing_number*twopi > (maximal_displacement-total_displacement):
                 valley_crossing_number = valley_crossing_number - 1 
+                
             these_collisions.append(tuple([angles[:],valley_crossing_number]))
             	
             	
@@ -160,7 +161,7 @@ for index in xrange(n_times):
             total_displacement += displacement   
             angles[lift] = (angles[lift] + displacement)%twopi 
             lift = (lift+1)%2
-            while valley_crossing_number*twopi > maximal_displacement:
+            while valley_crossing_number*twopi > (maximal_displacement-total_displacement):
                 valley_crossing_number = valley_crossing_number - 1   
             these_collisions.append(tuple([angles[:],valley_crossing_number]))
             
@@ -169,7 +170,7 @@ for index in xrange(n_times):
     all_collisions.append(these_collisions[:])   
 
 print all_collisions
-numpy.save("2 Particle Data/two_spins.npy",all_collisions)
+#numpy.save("2 Particle Data/two_spins.npy",all_collisions)
 
 
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")

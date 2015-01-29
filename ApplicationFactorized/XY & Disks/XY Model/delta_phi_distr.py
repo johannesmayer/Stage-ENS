@@ -1,4 +1,4 @@
-import numpy, math, matplotlib.pyplot as plt
+import numpy, math, matplotlib.pyplot as plt, random
 
 
 #####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####
@@ -14,9 +14,9 @@ def whos_lift(my_data):
 twopi = 2*math.pi
 
 
-data_step = 0.1
+data_step = 0.5
 all_delta_phi = []
-
+direct_delta_phi = []
 
 all_data = numpy.load("2 Particle Data/two_spins.npy")
 
@@ -62,13 +62,18 @@ for i_sweep in range(len(all_data)):
                 #print("PHI MOVE REST: "+str(phi_move))
                 lift = (lift+1)%2
                 
-                
+while len(direct_delta_phi) < len(all_delta_phi):
+    upsilon = random.uniform(0.,twopi)
+    if random.uniform(0.,1.) < upsilon:
+        direct_delta_phi.append(upsilon)
+    
+    
 h,b = numpy.histogram(all_delta_phi,bins = 100, normed = True)
 b = 0.5 * (b[1:]+b[:-1])
 plt.plot(b,h)
 plt.plot(b,numpy.exp(numpy.cos(b))/7.95493)
 plt.show()              
-                
+       
                 
                 
                 
