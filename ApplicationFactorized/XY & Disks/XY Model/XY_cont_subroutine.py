@@ -35,8 +35,8 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 5*math.pi
-n_times = 10**1
+maximal_displacement = 50*math.pi
+n_times = 10**4
 ############+############+############+############+############+############+
 """
 Since one always turns ccw one will sometimes have an initial move which will 
