@@ -35,8 +35,9 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 2*math.pi
-n_times = 10**0
+maximal_displacement = 3*math.pi
+#n_times = 10**4
+n_times = 2
 ############+############+############+############+############+############+
 """
 Since one always turns ccw one will sometimes have an initial move which will 
@@ -169,8 +170,7 @@ for index in xrange(n_times):
             
     all_collisions.append(these_collisions[:])   
 
-print all_collisions
-#numpy.save("2 Particle Data/two_spins.npy",all_collisions)
+numpy.save("2 Particle Data/two_spins.npy",all_collisions)
 
 
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")
