@@ -20,6 +20,8 @@ Here set J = 1 but it could also be taken as a 1/r distance dependent prefactor
 def energy(J,x):
     ene = -J*math.cos(x)
     return ene
+    
+#THIS FUNCTION MIRRORS A NUMBER BETWEEN 0 AND PI AT THE PI AXIS AND VICE VERSA
 
 def mirror(delta_phi):
     psi = math.pi - (delta_phi + math.pi)%(2*math.pi)
@@ -36,8 +38,9 @@ energy_max = energy(J,math.pi)
 all_collisions = []
 
 maximal_displacement = 3*math.pi
+#maximal_displacement = 1.2
 #n_times = 10**4
-n_times = 2
+n_times = 1
 ############+############+############+############+############+############+
 """
 Since one always turns ccw one will sometimes have an initial move which will 
@@ -58,11 +61,11 @@ for index in xrange(n_times):
     
 #+++++++++++++initialize the two spins at a random positions +++++++++++++++#
     
-    angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
-    lift = random.choice([0,1])
+    #angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
+    #lift = random.choice([0,1])
     
-    #angles = [0.5*math.pi,1.5*math.pi]
-    #lift = 0
+    angles = [0.1,1.4]
+    lift = 1
     
     total_displacement = 0.0
     these_collisions = []
@@ -82,7 +85,7 @@ for index in xrange(n_times):
         while upsilon == 0:
             upsilon = random.uniform(0.,1.)
         random_energy = -(1/beta)*math.log(upsilon)
-        #random_energy = 20*J
+        #random_energy = 0
 #+++ TEST HOW OFTEN THEY CAN CROSS THE COMPLETE POTENTIAL WITH THAT ENERGY AND STORE REST +++#
     
         valley_crossing_number = random_energy // (2*J)
@@ -170,7 +173,7 @@ for index in xrange(n_times):
             
     all_collisions.append(these_collisions[:])   
 
-numpy.save("2 Particle Data/two_spins.npy",all_collisions)
-
+#numpy.save("2 Particle Data/two_spins.npy",all_collisions)
+print all_collisions
 
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")
