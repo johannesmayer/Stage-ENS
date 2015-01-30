@@ -37,7 +37,7 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 0.5*math.pi
+maximal_displacement = 0.1*math.pi
 #maximal_displacement = 1.2
 n_times = 10**5
 #n_times = 
@@ -50,21 +50,19 @@ passes by the other spin and will continue turning until the metropolis would
 reject it.
 """
 ############+############+############+############+############+############+
-
-##################### DO ALL THE EVENT CHAINS VERY OFTEN #####################
-
+#+++++++++++++initialize the two spins at a random positions +++++++++++++++#
 
 angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
+
+
+##################### DO ALL THE EVENT CHAINS VERY OFTEN #####################
 
 
 for index in xrange(n_times):
     
     if index % 1000 == 0 and index != 0:
         print("PROGRESS: "+str(index)+"/"+str(n_times))
-        
-    
-#+++++++++++++initialize the two spins at a random positions +++++++++++++++#
-    
+            
     lift = random.choice([0,1])
     
     #angles = [0.1,1.4]
@@ -73,7 +71,6 @@ for index in xrange(n_times):
     total_displacement = 0.0
     these_collisions = []
     these_collisions.append(tuple([angles[:],0]))
-    
 #+++++++++++++now take care of the the angles and the displacement +++++++++++++++#
     
     
