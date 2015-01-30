@@ -37,10 +37,10 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 3*math.pi
+maximal_displacement = 0.5*math.pi
 #maximal_displacement = 1.2
-#n_times = 10**4
-n_times = 1
+n_times = 10**5
+#n_times = 
 ############+############+############+############+############+############+
 """
 Since one always turns ccw one will sometimes have an initial move which will 
@@ -53,6 +53,10 @@ reject it.
 
 ##################### DO ALL THE EVENT CHAINS VERY OFTEN #####################
 
+
+angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
+
+
 for index in xrange(n_times):
     
     if index % 1000 == 0 and index != 0:
@@ -61,15 +65,15 @@ for index in xrange(n_times):
     
 #+++++++++++++initialize the two spins at a random positions +++++++++++++++#
     
-    #angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
-    #lift = random.choice([0,1])
+    lift = random.choice([0,1])
     
-    angles = [0.1,1.4]
-    lift = 1
+    #angles = [0.1,1.4]
+    #lift = 1
     
     total_displacement = 0.0
     these_collisions = []
     these_collisions.append(tuple([angles[:],0]))
+    
 #+++++++++++++now take care of the the angles and the displacement +++++++++++++++#
     
     
@@ -173,7 +177,6 @@ for index in xrange(n_times):
             
     all_collisions.append(these_collisions[:])   
 
-#numpy.save("2 Particle Data/two_spins.npy",all_collisions)
-print all_collisions
+numpy.save("2 Particle Data/two_spins.npy",all_collisions)
 
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")
