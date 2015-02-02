@@ -31,15 +31,15 @@ def mirror(delta_phi):
 
 J = 1.0
 beta = 1.0
-twopi = 1.*math.pi
+twopi = 2*math.pi
 
 energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-chain_length = 1.*math.pi
+chain_length = 10.0*math.pi
 #maximal_displacement = 1.2
-n_times = 10**5
+n_times = 10**6
 #n_times = 
 
 ############+############+############+############+############+############+
@@ -150,9 +150,6 @@ for index in xrange(n_times):
              
                 
             these_collisions.append(tuple([angles[:],valley_crossing_number]))
-            
-            if valley_crossing_number > 2:
-                testindex += 1
                	
             	
             
@@ -190,12 +187,8 @@ for index in xrange(n_times):
             
                 
             these_collisions.append(tuple([angles[:],valley_crossing_number]))
-            
-            if valley_crossing_number > 2:
-                testindex += 1
                
     all_collisions.append(these_collisions[:])   
-print("QUOTE: "+str(testindex/float(n_times)))
 #print all_collisions
 numpy.save("2 Particle Data/two_spins.npy",all_collisions)
 

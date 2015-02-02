@@ -1,4 +1,4 @@
-import numpy, math, matplotlib.pyplot as plt, random
+import numpy, math, matplotlib.pyplot as plt
 
 
 #####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####
@@ -14,14 +14,14 @@ def whos_lift(my_data):
 twopi = 2*math.pi
 
 
-data_step = 0.05 * math.pi
+data_step = 2.0 * math.pi
 all_delta_phi = []
 
 all_data = numpy.load("2 Particle Data/two_spins.npy")
-
+markov_chain = numpy.load("2 Particle Data/markov_histogram.npy")
 
 for i_sweep in range(len(all_data)):
-    if i_sweep % 100 == 0:
+    if i_sweep % 1000 == 0:
         print("PROGRESS: "+str(i_sweep)+"/"+str(len(all_data)))
     data = all_data[i_sweep]
     #print data
@@ -69,23 +69,10 @@ for i_sweep in range(len(all_data)):
                 
 all_delta_phi = numpy.array(all_delta_phi)    
     
-    
-h,b = numpy.histogram(all_delta_phi,bins = 100, normed = True)
-b = 0.5 * (b[1:]+b[:-1])
-plt.plot(b,h)
-plt.plot(b,numpy.exp(numpy.cos(b))/7.95493)
-plt.show()              
-       
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+
+
+numpy.save("2 Particle Data/event_chain.npy",all_delta_phi)
+
                 
                 
                 
