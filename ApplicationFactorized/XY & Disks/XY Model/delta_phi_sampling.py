@@ -14,7 +14,7 @@ def whos_lift(my_data):
 twopi = 2*math.pi
 
 
-data_step = 2.0 * math.pi
+data_step = 0.04 * math.pi
 all_delta_phi = []
 
 all_data = numpy.load("2 Particle Data/two_spins.npy")

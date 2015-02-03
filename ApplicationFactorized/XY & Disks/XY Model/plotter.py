@@ -32,6 +32,10 @@ maximal_distance = max(abs(histo1 - markov_histo))
 print("MAXIMAL DISTANCE: "+str(maximal_distance))
 plt.legend(loc=4)
 
+plt.title("Comparison Event chain and regular MCMC")
+plt.xlabel("Delta Phi")
+plt.ylabel("Multiplicity")
+
 plt.show()
                 
                 

@@ -55,18 +55,14 @@ def calc_displacement(random_energy,J,delta_phi):
     return displacement, valley_crossing_number        
 ##########+#########+##########+#########+##########+#########+##########+#########
 
-lift_counter = numpy.zeros
 
-
-L = 3
+L = 5
 N = L*L
-
-lift_counter = numpy.zeros(N)
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 
 J = 1.0
-beta = 1.0
+beta = 15.0
 twopi = 2*math.pi
 
 energy_max = energy(J,math.pi)
@@ -74,10 +70,10 @@ energy_max = energy(J,math.pi)
 all_collisions = []
 
 chain_length = 20*math.pi
-n_times = 10**4
+n_times = 10**0
 
 
-spins = [random.uniform(0,twopi) for k in range(N)]
+spins = [random.uniform(0,0.1*math.pi) for k in range(N)]
 
 for i_sweep in range(n_times):
     
@@ -90,11 +86,10 @@ for i_sweep in range(n_times):
     
     while total_displacement < chain_length:
         
-        lift_counter[lift] += 1
         
         # give a random energy to the lifting spin
         upsilon=random.uniform(0.,1.)
-        random_energy = -1/beta*math.log(upsilon)
+        random_energy = (-1/beta)*math.log(upsilon)
         #check with whom he will be interacting
         all_deltas = [(spins[lift] - spins[nbr[lift][k]])%twopi for k in range(4)]
         whos_next = nbr[lift][numpy.argmin(all_deltas)]
@@ -104,19 +99,18 @@ for i_sweep in range(n_times):
         rest_displacement, n_turns = calc_displacement(random_energy, J, delta_phi)  
         displacement = n_turns*twopi + rest_displacement
         
-        
         # see if displacement will exceed chain length and if yes truncate
         if displacement + total_displacement < chain_length:
-            spins[lift] = spins[lift]+displacement
+            spins[lift] = (spins[lift]+displacement)%twopi
         else:
             displacement = chain_length - total_displacement
-            spins[lift] = spins[lift]+displacement    
-        
+            spins[lift] = (spins[lift]+displacement)%twopi   
         total_displacement += displacement
         # see how often one can turn at max until one exceeds chain length
         while n_turns*twopi > (chain_length - total_displacement):
-            n_turns -= 1       
+            n_turns -= 1
+                
+        all_collisions.append(spins[:])
         lift = whos_next
-    
-print lift_counter/(sum(lift_counter))
-
+        
+numpy.save("Grid Data/xy_grid.npy",all_collisions)
