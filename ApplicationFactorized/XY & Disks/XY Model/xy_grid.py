@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #2 spin XY model subroutine
 #author: JM
+#Date:  2015/02/03
 import numpy, random, math, time
 
 starting_time = time.time()
@@ -56,7 +57,7 @@ def calc_displacement(random_energy,J,delta_phi):
 ##########+#########+##########+#########+##########+#########+##########+#########
 
 
-L = 5
+L = 3
 N = L*L
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
@@ -68,24 +69,24 @@ twopi = 2*math.pi
 energy_max = energy(J,math.pi)
 
 all_collisions = []
-
-chain_length = 20*math.pi
-n_times = 10**0
+chain_length = 0.2*math.pi
+n_times = 10**1
 
 
 spins = [random.uniform(0,0.1*math.pi) for k in range(N)]
 
 for i_sweep in range(n_times):
-    
     if i_sweep % 1000 == 0:
         print("PROGRESS: "+str(i_sweep)+"/"+str(n_times))
     
     #resample the lifting variable and then move spins throught lattice
     total_displacement = 0.0
-    lift = random.choice(numpy.arange(N))
+    lift = int(random.choice(numpy.arange(N)))
+    these_collisions = []
+    these_collisions.append(tuple([spins[:],lift,0]))
+    
     
     while total_displacement < chain_length:
-        
         
         # give a random energy to the lifting spin
         upsilon=random.uniform(0.,1.)
@@ -93,7 +94,7 @@ for i_sweep in range(n_times):
         #check with whom he will be interacting
         all_deltas = [(spins[lift] - spins[nbr[lift][k]])%twopi for k in range(4)]
         whos_next = nbr[lift][numpy.argmin(all_deltas)]
-
+        
         delta_phi = min(all_deltas)
         
         rest_displacement, n_turns = calc_displacement(random_energy, J, delta_phi)  
@@ -109,8 +110,10 @@ for i_sweep in range(n_times):
         # see how often one can turn at max until one exceeds chain length
         while n_turns*twopi > (chain_length - total_displacement):
             n_turns -= 1
-                
-        all_collisions.append(spins[:])
+    
         lift = whos_next
+        these_collisions.append(tuple([spins[:],lift,n_turns]))
         
+    all_collisions.append(these_collisions[:])
+
 numpy.save("Grid Data/xy_grid.npy",all_collisions)
