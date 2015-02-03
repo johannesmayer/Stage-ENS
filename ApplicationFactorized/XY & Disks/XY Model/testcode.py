@@ -62,6 +62,8 @@ twopi = 2*math.pi
 
 delta_step = 0.1*pi
 
+all_delta_phi = []
+
 for chain in xrange(number_of_chains):   
     data = all_data[chain]
     #of the current start of the chain take all the delta phis
@@ -73,13 +75,13 @@ for chain in xrange(number_of_chains):
         rest = 0.
     #then for the moving one take out all the neighboring delta phis
         for neighbor in nbr[lift]:
-            neigh_delta = abs(data[0][0][neighbor]-data[0][0][lift])
+            neigh_delta = abs(data[index][0][neighbor]-data[index][0][lift])
             for element in current_delta_list:
                 if abs(element - neigh_delta) == 0:
                     current_delta_list.remove(element)
         phi_from = data[index][0][lift]
         phi_to = data[index+1][0][lift]
-        
+        delta_phi_copy = current_delta_list[:]
         if (phi_from + rest)% twopi > phi_to:
             rest = (phi_from + rest )%twopi - phi_to
             continue
@@ -89,7 +91,12 @@ for chain in xrange(number_of_chains):
         phi_from = phi_from + rest
         phi_to = phi_to + twopi*n_turns
         phi_still = [data[index][0][nbr[lift][j]] for j in range(4)]
-        
+        while phi_from < phi_to:
+            for neigh in nbr[lift]:
+                one_move_delta_phis = delta_phi_copy[:]
+                neigh
+                
+            
             
                
                 

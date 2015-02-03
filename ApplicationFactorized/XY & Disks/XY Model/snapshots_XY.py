@@ -18,13 +18,16 @@ from matplotlib import animation
 
 
 # linear size of the system:
-L = 5
+L = 10
 K = L*L
 # get the list of configurations from somewhere, e.g. generate them randomly
 #list_conf = [numpy.random.uniform(0.0, 2.0 * numpy.pi, size=(L, L)) for step in xrange(nsteps)]
-list_conf = numpy.load("Grid Data/xy_grid.npy")
-
+my_data = numpy.load("Grid Data/xy_grid.npy")
+list_conf = []
+for index in range(len(my_data[0])):
+    list_conf.append(my_data[0][index][0])
 nsteps = len(list_conf)
+
 ###############################################################################
 
 ## PART 2 (not related to the animation)

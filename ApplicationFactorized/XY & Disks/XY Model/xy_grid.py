@@ -57,7 +57,7 @@ def calc_displacement(random_energy,J,delta_phi):
 ##########+#########+##########+#########+##########+#########+##########+#########
 
 
-L = 3
+L = 10
 N = L*L
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
@@ -69,8 +69,8 @@ twopi = 2*math.pi
 energy_max = energy(J,math.pi)
 
 all_collisions = []
-chain_length = 0.2*math.pi
-n_times = 10**1
+chain_length = 100*math.pi
+n_times = 10**0
 
 
 spins = [random.uniform(0,0.1*math.pi) for k in range(N)]
@@ -115,5 +115,5 @@ for i_sweep in range(n_times):
         these_collisions.append(tuple([spins[:],lift,n_turns]))
         
     all_collisions.append(these_collisions[:])
-
+print len(all_collisions[0])
 numpy.save("Grid Data/xy_grid.npy",all_collisions)
