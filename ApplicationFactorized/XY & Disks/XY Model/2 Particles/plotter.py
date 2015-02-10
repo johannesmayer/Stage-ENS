@@ -30,7 +30,7 @@ plt.plot(k,markov_histo,label="MARKOV CHAIN")
 maximal_distance = max(abs(histo1 - markov_histo))
 
 print("MAXIMAL DISTANCE: "+str(maximal_distance))
-plt.legend(loc=4)
+plt.legend(loc=2)
 
 plt.title("Comparison Event chain and regular MCMC")
 plt.xlabel("Delta Phi")

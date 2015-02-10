@@ -37,7 +37,7 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-chain_length = 0.4*math.pi
+chain_length = 2.0*math.pi
 #maximal_displacement = 1.2
 n_times = 10**5
 #n_times = 

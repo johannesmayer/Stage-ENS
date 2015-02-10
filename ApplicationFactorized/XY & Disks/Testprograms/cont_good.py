@@ -35,9 +35,8 @@ energy_max = energy(J,math.pi)
 
 all_collisions = []
 
-maximal_displacement = 2*twopi
+maximal_displacement = 2*math.pi
 n_times = 10**0
-
 ############+############+############+############+############+############+
 """
 Since one always turns ccw one will sometimes have an initial move which will 
@@ -50,22 +49,23 @@ reject it.
 
 ##################### DO ALL THE EVENT CHAINS VERY OFTEN #####################
 
-for index in range(n_times):
+for index in xrange(n_times):
     
-    if index % 1000 == 0:
+    if index % 1000 == 0 and index != 0:
         print("PROGRESS: "+str(index)+"/"+str(n_times))
+        
     
 #+++++++++++++initialize the two spins at a random positions +++++++++++++++#
     
     angles = [random.uniform(0,twopi),random.uniform(0,twopi)]
     lift = random.choice([0,1])
     
-    #angles = [0.4*math.pi,1.5*math.pi]
+    #angles = [0.5*math.pi,1.5*math.pi]
     #lift = 0
     
     total_displacement = 0.0
     these_collisions = []
-    these_collisions.append(angles[:])
+    these_collisions.append(tuple([angles[:],0]))
 #+++++++++++++now take care of the the angles and the displacement +++++++++++++++#
     
     
@@ -76,11 +76,12 @@ for index in range(n_times):
 ################################################################################
     
     while total_displacement < maximal_displacement:
-        print lift
         delta_phi = angles[0] - angles[1]
         upsilon = random.uniform(0.,1.)
+        while upsilon == 0:
+            upsilon = random.uniform(0.,1.)
         random_energy = -(1/beta)*math.log(upsilon)
-        
+        #random_energy = 20*J
 #+++ TEST HOW OFTEN THEY CAN CROSS THE COMPLETE POTENTIAL WITH THAT ENERGY AND STORE REST +++#
     
         valley_crossing_number = random_energy // (2*J)
@@ -109,7 +110,7 @@ for index in range(n_times):
                 if energy_max-energy(J,delta_phi) > rest_energy:
                     phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
    	        else:             
-                    phi_star = delta_phi + math.pi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
+                    phi_star = twopi - delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
                 
             displacement = 0.0
             if total_displacement + phi_bullet + phi_star + valley_crossing_number*twopi < maximal_displacement :
@@ -121,7 +122,15 @@ for index in range(n_times):
             total_displacement += displacement   
             angles[lift] = (angles[lift] + displacement)%twopi 
             lift = (lift+1)%2  
-            these_collisions.append(angles[:])
+            # save the angles and the number how often the lifted spin had to turn a full circle 
+            # in order to arrive at its position (because this information is lost by taking 
+            # modulo two pi
+            # make sure that if one would go around too often and violate the chain length one 
+            # needs to save a different number of times one actually went in a circle
+            while valley_crossing_number*twopi > (maximal_displacement-total_displacement):
+                valley_crossing_number = valley_crossing_number - 1 
+                
+            these_collisions.append(tuple([angles[:],valley_crossing_number]))
             	
             	
             
@@ -140,7 +149,7 @@ for index in range(n_times):
                 if energy_max-energy(J,delta_phi) > rest_energy:                    
                     phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
                 else:             
-                    phi_star = delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
+                    phi_star = twopi - delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
             
             displacement = 0.0
             if total_displacement + phi_bullet + phi_star + valley_crossing_number*twopi < maximal_displacement :
@@ -151,12 +160,17 @@ for index in range(n_times):
                             
             total_displacement += displacement   
             angles[lift] = (angles[lift] + displacement)%twopi 
-            lift = (lift+1)%2  
-            these_collisions.append(angles[:])
+            lift = (lift+1)%2
+            while valley_crossing_number*twopi > (maximal_displacement-total_displacement):
+                valley_crossing_number = valley_crossing_number - 1   
+            these_collisions.append(tuple([angles[:],valley_crossing_number]))
             
         
             
     all_collisions.append(these_collisions[:])   
-print all_collisions    
-numpy.save("2 Particle Data/two_spins.npy",all_collisions)
+
+print all_collisions
+#numpy.save("2 Particle Data/two_spins.npy",all_collisions)
+
+
 print("DURATION: "+str(time.time()-starting_time)+" SECONDS")

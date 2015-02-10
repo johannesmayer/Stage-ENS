@@ -2,7 +2,7 @@
 #2 spin XY model subroutine
 #author: JM
 #Date:  2015/02/03
-import numpy, random, math, time
+import numpy, random, math, time, sys
 
 starting_time = time.time()
 
@@ -33,73 +33,85 @@ def square_neighbors(L):
    return nbr,site_dic,x_y_dic
 
 def calc_displacement(random_energy,J,delta_phi):
+    del_phi = delta_phi % twopi
     valley_crossing_number = random_energy // (2*J)
     rest_energy = random_energy % (2*J)
     displacement = 0.0
 
-    delta_phi = delta_phi % twopi
     phi_bullet = 0
     phi_star = 0
             
-    if delta_phi > math.pi and delta_phi < twopi:
+    if del_phi > math.pi and del_phi < twopi:
         #go down into the valley and see how far up you come
-        phi_bullet = twopi - delta_phi
+        phi_bullet = twopi - del_phi
         phi_star = math.acos(1-rest_energy/J)  
             
     else:
-        if energy_max-energy(J,delta_phi) > rest_energy:
-            phi_star = math.acos(math.cos(delta_phi) - rest_energy/J) - delta_phi
+        if energy_max-energy(J,del_phi) > rest_energy:
+            phi_star = math.acos(math.cos(del_phi) - rest_energy/J) - del_phi
         else:             
-            phi_star = twopi - delta_phi + math.acos(1-(rest_energy - energy_max + energy(J,delta_phi))/J)
+            phi_star = twopi - del_phi + math.acos(1-(rest_energy - energy_max + energy(J,del_phi))/J)
                 
     displacement = phi_bullet + phi_star + valley_crossing_number*twopi
     return displacement, valley_crossing_number        
 ##########+#########+##########+#########+##########+#########+##########+#########
 
+if len(sys.argv) != 6 :
+    sys.exit("GIVE ME THE INPUT IN THE FORM: L : J : BETA : CHAINLENGHT IN UNITS OF PI : NUMBER OF CHAINS")
 
-L = 10
+
+L = int(sys.argv[1])
 N = L*L
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 
-J = 1.0
-beta = 15.0
-twopi = 2*math.pi
-
+J = float(sys.argv[2])
+beta = float(sys.argv[3])
 energy_max = energy(J,math.pi)
 
+pi = math.pi
+twopi = 2*math.pi
+
 all_collisions = []
-chain_length = 100*math.pi
-n_times = 10**0
+#chain_length = 2.*math.pi
+chain_length = float(sys.argv[4])*pi
+n_times = int(sys.argv[5])
 
-
-spins = [random.uniform(0,0.1*math.pi) for k in range(N)]
+spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
 for i_sweep in range(n_times):
-    if i_sweep % 1000 == 0:
-        print("PROGRESS: "+str(i_sweep)+"/"+str(n_times))
+    if i_sweep % 10000 == 0:
+        print("PROGRESS: "+str(100*i_sweep/n_times)+"%")
     
     #resample the lifting variable and then move spins throught lattice
     total_displacement = 0.0
-    lift = int(random.choice(numpy.arange(N)))
+    lift = random.randrange(N)
     these_collisions = []
+    #the first point in each chain is the starting point+who will move next
     these_collisions.append(tuple([spins[:],lift,0]))
-    
     
     while total_displacement < chain_length:
         
         # give a random energy to the lifting spin
-        upsilon=random.uniform(0.,1.)
-        random_energy = (-1/beta)*math.log(upsilon)
         #check with whom he will be interacting
-        all_deltas = [(spins[lift] - spins[nbr[lift][k]])%twopi for k in range(4)]
-        whos_next = nbr[lift][numpy.argmin(all_deltas)]
+        neigh_deltas = [(spins[lift] - spins[nbr[lift][k]])%twopi for k in range(4)]
+        distance_comparison = []
+        energy_vault = []
         
-        delta_phi = min(all_deltas)
+        for number in neigh_deltas:
+            #important to sample each neighbor individually
+            upsilon=random.uniform(0.,1.)
+            random_energy = (-1/beta)*math.log(upsilon)
+            distance_comparison.append(calc_displacement(random_energy,J,number)[0])
+            energy_vault.append(random_energy)
+            
+        whos_next = nbr[lift][numpy.argmin(distance_comparison)]
+        delta_phi = neigh_deltas[numpy.argmin(distance_comparison)]
+        used_energy = energy_vault[numpy.argmin(distance_comparison)]
         
-        rest_displacement, n_turns = calc_displacement(random_energy, J, delta_phi)  
+        rest_displacement, n_turns = calc_displacement(used_energy, J, delta_phi)  
         displacement = n_turns*twopi + rest_displacement
-        
+         
         # see if displacement will exceed chain length and if yes truncate
         if displacement + total_displacement < chain_length:
             spins[lift] = (spins[lift]+displacement)%twopi
@@ -110,10 +122,9 @@ for i_sweep in range(n_times):
         # see how often one can turn at max until one exceeds chain length
         while n_turns*twopi > (chain_length - total_displacement):
             n_turns -= 1
-    
-        lift = whos_next
+        #save the data in the order: point of collisions, who moved here, how many turns did it take
         these_collisions.append(tuple([spins[:],lift,n_turns]))
-        
+        lift = whos_next
+
     all_collisions.append(these_collisions[:])
-print len(all_collisions[0])
-numpy.save("Grid Data/xy_grid.npy",all_collisions)
+numpy.save("Grid Data/xy_grid_collisions_beta_"+str(beta)+".npy",all_collisions)

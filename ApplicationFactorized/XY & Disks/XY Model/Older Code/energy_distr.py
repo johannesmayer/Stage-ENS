@@ -1,21 +1,26 @@
-import numpy, math, matplotlib.pyplot as plt, random
+import numpy, math, matplotlib.pyplot as plt
 
 
 #####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####
 
 def whos_lift(my_data):
     lift = 0
-    if my_data[0][0][0] == my_data[1][0][0]:
+    if my_data[0][0] == my_data[1][0]:
         lift = 1
     return lift
+
+def energy(J,delta_phi):
+    return -J*math.cos(delta_phi)
     
 #####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####+#####
 
 twopi = 2*math.pi
 
 
-data_step = 0.01 * math.pi
+data_step = 0.1
 all_delta_phi = []
+
+energies = []
 
 all_data = numpy.load("2 Particle Data/two_spins.npy")
 
@@ -26,7 +31,6 @@ for i_sweep in range(len(all_data)):
     data = all_data[i_sweep]
     #print data
     lift = whos_lift(data)
-    #print("LIFT: "+str(lift))
     rest = 0
     for index in range(len(data)-1):
         phi_still = data[index][0][(lift+1)%2]
@@ -49,7 +53,7 @@ for i_sweep in range(len(all_data)):
         #print("To "+str(phi_to))
         
         while phi_move < phi_to:
-            all_delta_phi.append((phi_move - phi_still)%twopi)
+            all_delta_phi.append(energy((phi_move - phi_still)%twopi))
             if phi_move + data_step < phi_to:
                 phi_move += data_step
                 #print("PHI MOVE FREE: "+str(phi_move))
@@ -62,14 +66,13 @@ for i_sweep in range(len(all_data)):
                 #print("PHI MOVE REST: "+str(phi_move))
                 lift = (lift+1)%2
                 
-    
-    
+                
 h,b = numpy.histogram(all_delta_phi,bins = 100, normed = True)
 b = 0.5 * (b[1:]+b[:-1])
 plt.plot(b,h)
 plt.plot(b,numpy.exp(numpy.cos(b))/7.95493)
 plt.show()              
-       
+                
                 
                 
                 
