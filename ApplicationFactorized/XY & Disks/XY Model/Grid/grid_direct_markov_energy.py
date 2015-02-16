@@ -13,7 +13,7 @@ def energy(J,move_spin_,nbrs_,spins_):
         ene += -J*math.cos(move_spin_-spins_[neigh])
     return ene
 
-#constructing a square lattice
+#constructing a square lattice and find all the bonds
 
 def square_neighbors(L):
    N = L*L
@@ -36,28 +36,37 @@ def square_neighbors(L):
    return nbr,site_dic,x_y_dic
 
 
+def make_bonds(N,nbr):
+    bonds = []
+    for particle in xrange(N):
+        for neigh in nbr[particle]:
+            this_bond = [particle, neigh]
+            this_bond = sorted(this_bond)
+            bonds.append(tuple(this_bond))
+    bonds = np.unique(bonds)
+    return bonds
+
 #for a given set of spins calculate all delta phis
+def grid_energy(J,my_config,bonds):
+    ene = 0.
+    my_deltas = all_angles(my_config, bonds)
+    for angle in my_deltas:
+        ene -= J*np.cos(angle)
+    return ene
 
+def all_angles(my_spins, bonds):
+    all_deltas = []
+    for bond in bonds:
+        spina = my_spins[bond[0]]
+        spinb = my_spins[bond[1]]
+        direct_dist = abs(spina - spinb)
+        all_deltas.append(min(direct_dist,twopi - direct_dist))
+    return all_deltas
 
-def all_angles(my_spins, nbr):
-    N = len(my_spins)
-    all_delta_phi = []    
-    for index in range(N):
-        for neigh in nbr[index]:
-            direct_dist = abs((my_spins[index]-my_spins[neigh]))
-            all_delta_phi.append(min(direct_dist, twopi -direct_dist))
-    all_delta_phi = np.unique(all_delta_phi)
-    return list(all_delta_phi)
-    
-def map_periodic_distance(my_list):
-    length = len(my_list)
-    for index in xrange(length):
-        my_list[index] = min(my_list[index],twopi-my_list[index])
-    return my_list
 ########################+#######################+###########################+
 
 if len(sys.argv) != 5 :
-    sys.exit(" GIVE MIT INPUT IN ORDER: GRID EDGE LENGTH L , COUPLING J, BETA, NUMBER OF STEPS ")
+    sys.exit(" GIVE MIT INPUT IN ORDER: GRID EDGE LENGTH L , COUPLING J, BETA, NUMBER OF SWEEPS ")
 
 
 
@@ -72,10 +81,14 @@ beta = float(sys.argv[3])
 step = 0.5*pi
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
+all_bonds = make_bonds(N,nbr)
+bonds = []
+for bond in all_bonds:
+    bonds.append(tuple(bond))
+
 
 spins = [random.uniform(0,2*pi) for k in xrange(N)]
-all_configurations = []
-all_delta_phis = []
+all_energies = []
 successor = 0.
 
 all_steps = []
@@ -84,8 +97,8 @@ n_times = int(sys.argv[4])
 
 for i_sweep in xrange(n_times):
     
-    if i_sweep % 10000 == 0:
-        print i_sweep,n_times
+    if i_sweep % 1000 == 0:
+        print i_sweep,n_times, 'in time of ',time.time()-starting_time, ' seconds'
     for index in xrange(N):
         who_moves = random.choice(np.arange(N))
         neighs = nbr[who_moves]
@@ -96,28 +109,16 @@ for i_sweep in xrange(n_times):
             successor += 1
             all_steps.append(abs(move))
         else: all_steps.append(0.)
-    all_configurations.append(spins[:])   
-
-for config in all_configurations:
-    all_my_deltas = all_angles(config,nbr)
-    all_my_deltas = map_periodic_distance(all_my_deltas)
-    all_delta_phis.append(all_my_deltas)
-    
-    
+    all_energies.append(grid_energy(J,spins,bonds))   
+        
     #all_delta_phis.extend(all_angles(config,nbr))
 print("RATE: "+str(successor/n_times/N))
-print("AVERAGE DISPLACEMENT PER MOVE: "+str(np.mean(all_steps)))
+print("AVERAGE DISPLACEMENT PER SWEEP: "+str(N*np.mean(all_steps)/pi)+"Pi")
 
+print("DURATION: "+str(time.time()-starting_time))
 
-np.save("Grid Data/grid_markov_data_beta_"+str(beta)+".npy",all_delta_phis)
+plt.plot(all_energies)
+plt.show()
 
+np.save("Grid Data/grid_markov_energies_beta_"+str(beta)+"_L_"+str(L)+".npy",all_energies)
 
-"""
-h,b = np.histogram(all_delta_phis,bins = 100, normed = False)
-
-b = 0.5*(b[1:]+b[:-1])
-plt.subplot(221)
-plt.plot(b,h)
-
-plt.show() 
-"""    

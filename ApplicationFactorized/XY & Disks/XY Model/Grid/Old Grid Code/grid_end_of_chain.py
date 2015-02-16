@@ -89,7 +89,7 @@ for chain in xrange(number_of_chains):
     final_deltas = map_periodic_distance(final_deltas)
     sampled_configurations.append(final_deltas)
   
-np.save("Grid Data/end_chains_of_"+sys.argv[1],sampled_configurations)       
+np.save("Grid Data/delta_phis_of_"+sys.argv[1],sampled_configurations)       
 
 print("DURATION: "+str(time.time()-starting_time))
                 
