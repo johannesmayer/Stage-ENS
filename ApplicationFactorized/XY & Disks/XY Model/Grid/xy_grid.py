@@ -118,10 +118,10 @@ for i_sweep in range(n_times):
         else:
             displacement = chain_length - total_displacement
             spins[lift] = (spins[lift]+displacement)%twopi   
-        total_displacement += displacement
         # see how often one can turn at max until one exceeds chain length
         while n_turns*twopi > (chain_length - total_displacement):
             n_turns -= 1
+        total_displacement += displacement
         #save the data in the order: point of collisions, who moved here, how many turns did it take
         these_collisions.append(tuple([spins[:],lift,n_turns]))
         lift = whos_next
