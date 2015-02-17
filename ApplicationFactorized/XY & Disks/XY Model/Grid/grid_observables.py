@@ -18,17 +18,17 @@ def energy_config(J,my_config):
     
 ################################################################################
 
-if len(sys.argv) != 4:
-    sys.exit("++++++++################ GIVE ME THE INPUT IN THE FOLLOWING ORDER: EVENT DATA : MARKOV DATA : THERMAL CUTOFF ################+++++++++++++++")
+if len(sys.argv) != 6:
+    sys.exit("++++++++################ GIVE ME THE INPUT IN THE FOLLOWING ORDER: EVENT DATA : MARKOV DATA : EVENT THERMAL CUTOFF : MARKOV THERMAL CUTOFF : MAXIMAL DELTA TO FIT ################+++++++++++++++")
 
 event_data = numpy.load("Grid Data/"+sys.argv[1])     
 markov_data = numpy.load("Grid Data/"+sys.argv[2])
 
-thermal_cutoff = int(sys.argv[3])
-
+event_thermal_cutoff = int(sys.argv[3])
+markov_thermal_cutoff = int(sys.argv[4])
 
 J = 1.
-delta_max = 20
+delta_max = 1000
 stepsize = 1
 
 event_observable = []
@@ -40,8 +40,8 @@ markov_correlator = []
 all_deltas = []
 
 
-event_observable = event_data[thermal_cutoff:]
-markov_observable = markov_data[thermal_cutoff:]   
+event_observable = event_data[event_thermal_cutoff:]
+markov_observable = markov_data[markov_thermal_cutoff:]   
 
   
 print 'avg ec ', numpy.mean(event_observable)
@@ -67,7 +67,7 @@ for delta in xrange(1,delta_max,stepsize):
     markov_correlator.append((autocorrelation(markov_observable,delta)-markov_mean**2)/(markov_sq_exp - markov_mean**2))
 
 #plt.plot(event_observable,'r.')
-dt_max_fit = 4
+dt_max_fit = int(sys.argv[5])
 event_tau_corr = 0.
 marko_tau_corr = 0.
 x = numpy.array(all_deltas[:dt_max_fit])

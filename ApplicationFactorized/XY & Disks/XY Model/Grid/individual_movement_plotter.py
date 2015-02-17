@@ -17,7 +17,7 @@ import sys
 # number of configurations:
 
 if len(sys.argv) != 4:
-    sys.exit("GIVE NAME OF CONFIGURATION LIST IN FOLDER GRID DATA : BETA : L")
+    sys.exit("GIVE NAME OF THE FILE CONTAINING THE INDIVIDUAL MOVEMENTS IN GRID DATA : BETA : L")
 
 # linear size of the system:
 L = int(sys.argv[3])
@@ -28,9 +28,9 @@ my_data = numpy.load("Grid Data/"+sys.argv[1])
 #my_data = numpy.load("Longruns/"+sys.argv[1])
 list_conf = []
 #for index in range(len(my_data[0])):
-for index in xrange(len(my_data[0])):
+for conf in my_data:
     #list_conf.append(my_data[index][0])
-    list_conf.append(my_data[0][index][0])
+    list_conf.append(conf)
 nsteps = len(list_conf)
 
 ###############################################################################
@@ -50,7 +50,7 @@ for step in xrange(nsteps):
     conf = list_conf[step]
     conf = numpy.reshape(conf,(L,L))
     pylab.axis([-0.5, L-0.5, -0.5, L - 0.5])
-    var = pylab.imshow(conf,interpolation = 'nearest',vmin = 0, vmax = 2*math.pi,cmap = pylab.get_cmap('hsv'))    
+    var = pylab.imshow(conf,interpolation = 'nearest',cmap = pylab.get_cmap('gist_gray'))    
     fig.colorbar(var)    
     pylab.savefig('beta_'+sys.argv[2]+'_L_'+sys.argv[3]+'_snapshot_%06i.png' % step, bbox_inches='tight')
     

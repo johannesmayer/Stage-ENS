@@ -10,7 +10,7 @@ import numpy
 from matplotlib import pyplot as plt
 
 if len(sys.argv) != 2:
-    sys.exit("GIVE ME INPUT IN THE FORM: NAME OF ENERGY DATA FILE IN GRID DATA")
+    sys.exit("GIVE ME INPUT IN THE FORM: NAME OF OBSERVABLE DATA FILE IN GRID DATA")
 
 def err_independent(obs):
     """
@@ -81,4 +81,4 @@ def bunching_v2(obs, base, namevar, datafile, plotname, DoPlot=True):
     return binwidths, errors, obs_av
     
 data = numpy.load("Grid Data/"+sys.argv[1])
-bunching_v2(data, 2, "Energy",sys.argv[1]+"_bunching_results.txt",sys.argv[1]+"_bunching_plot.png",True)
+bunching_v2(data, 2, "Observable",sys.argv[1]+"_bunching_results.txt",sys.argv[1]+"_bunching_plot.png",True)

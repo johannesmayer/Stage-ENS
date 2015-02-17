@@ -59,7 +59,7 @@ twopi = 2*math.pi
 J = float(sys.argv[2])
 beta = float(sys.argv[3])
 moves_per_sweep = int(sys.argv[5])
-step = 0.5*pi
+step = 0.1*pi
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 

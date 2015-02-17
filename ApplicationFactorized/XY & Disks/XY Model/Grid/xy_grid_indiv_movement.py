@@ -74,8 +74,9 @@ total_moves = 0
 pi = math.pi
 twopi = 2*math.pi
 
-all_collisions = []
-some_configurations = []
+rot_after_N_moves = []
+individual_movement = numpy.zeros(N)
+global_rotation = 0.0
 
 chain_length = float(sys.argv[4])*pi
 n_times = int(sys.argv[5])
@@ -126,13 +127,17 @@ for i_sweep in range(n_times):
         # see how often one can turn at max until one exceeds chain length
         while n_turns*twopi > (chain_length - total_displacement):
             n_turns -= 1
+        global_rotation += displacement
+        individual_movement[lift] += displacement 
         total_displacement += displacement
         #save the data in the order: point of collisions, who moved here, how many turns did it take
-        spins = (spins - chain_length/float(N))%twopi
+        spins = (spins)%twopi
         #these_collisions.append([spins[:],lift,n_turns])
-        if total_moves %(float(N)/10.) == 0:
-            some_configurations.append(spins[:])
+        if total_moves %(float(10*N)) == 0 and total_moves != 0:
+            rot_after_N_moves.append((individual_movement - global_rotation/float(N))/global_rotation)
+            global_rotation = 0.0
+            individual_movement = numpy.zeros(N)
         lift = whos_next
         
     #all_collisions.append(these_collisions[:])
-numpy.save("Grid Data/xy_grid_turnback_collisions_beta_"+str(beta)+"_L_"+str(L)+".npy",some_configurations)
+numpy.save("Grid Data/movement_on_each_site_beta_"+str(beta)+"_L_"+str(L)+".npy",rot_after_N_moves)
