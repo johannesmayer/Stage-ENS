@@ -130,7 +130,7 @@ for i_sweep in range(n_times):
             displacement = chain_length - total_displacement
             spins[lift] = (spins[lift]+displacement)%twopi  
             #here append the susceptibility to its array
-            all_suscepts.append(abs(xy_magnetisation(spins))**2)
+            all_suscepts.append(abs(xy_magnetisation(spins)) ** 2)
  
         total_displacement += displacement
         lift = whos_next

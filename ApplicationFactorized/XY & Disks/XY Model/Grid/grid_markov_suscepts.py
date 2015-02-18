@@ -3,8 +3,7 @@
 # -*- coding: utf-8 -*-
 #2 spin XY model subroutine
 #author: JM
-import numpy as numpy, random, math, time, sys
-#matplotlib.pyplot as plt
+import numpy as numpy, random, math, time, sys, matplotlib.pyplot as plt
 
 starting_time = time.time()
 
@@ -62,7 +61,7 @@ twopi = 2*math.pi
 J = float(sys.argv[2])
 beta = float(sys.argv[3])
 moves_per_sweep = int(sys.argv[5])
-step = 0.1*pi
+step = 2.0*pi
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 
@@ -101,9 +100,9 @@ print("DURATION: "+str(time.time()-starting_time))
 print("MOVES PER SWEEP: "+str(moves_per_sweep))
 print("I am skipping %i steps before next measurement" % SKIP_)
 
-#plt.plot(all_suscepts)
-#plt.xlabel('# of sweeps')
-#plt.ylabel('magnetic susceptibility')
-#plt.show()
+plt.plot(all_suscepts)
+plt.xlabel('# of sweeps')
+plt.ylabel('magnetic susceptibility')
+plt.show()
 
-numpy.save("Grid_Data/xy_grid_markov_suscepts_beta_"+str(beta)+"_L_"+str(L)+".npy",all_suscepts)
+numpy.save("Grid Data/xy_grid_markov_suscepts_beta_"+str(beta)+"_L_"+str(L)+".npy",all_suscepts)

@@ -9,8 +9,11 @@ import math
 import numpy
 from matplotlib import pyplot as plt
 
-if len(sys.argv) != 2:
-    sys.exit("GIVE ME INPUT IN THE FORM: NAME OF OBSERVABLE DATA FILE IN GRID DATA")
+if len(sys.argv) != 3:
+    sys.exit("GIVE ME INPUT IN THE FORM: NAME OF OBSERVABLE DATA FILE IN GRID DATA : THERMAL CUTOFF")
+
+
+thermal_cutoff = int(sys.argv[2])
 
 def err_independent(obs):
     """
@@ -80,5 +83,5 @@ def bunching_v2(obs, base, namevar, datafile, plotname, DoPlot=True):
     obs_av = numpy.mean(obs)
     return binwidths, errors, obs_av
     
-data = numpy.load("Grid Data/"+sys.argv[1])
+data = numpy.load("Grid Data/"+sys.argv[1])[thermal_cutoff:]
 bunching_v2(data, 2, "Observable",sys.argv[1]+"_bunching_results.txt",sys.argv[1]+"_bunching_plot.png",True)
