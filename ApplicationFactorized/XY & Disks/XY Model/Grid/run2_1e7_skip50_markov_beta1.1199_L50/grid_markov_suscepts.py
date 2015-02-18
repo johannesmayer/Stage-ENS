@@ -75,7 +75,7 @@ successor = 0.
 n_times = int(sys.argv[4])
 
 
-SKIP_ = 1
+SKIP_ = 50
 
 for i_sweep in xrange(n_times):
     
@@ -96,9 +96,8 @@ for i_sweep in xrange(n_times):
         all_suscepts.append(abs(xy_magnetisation(spins))**2)   
 logfile.close()
         
-print("RATE: "+str(successor/n_times/moves_per_sweep))
+print("RATE: "+str(successor/n_times/N))
 print("DURATION: "+str(time.time()-starting_time))
-print("MOVES PER SWEEP: "+str(moves_per_sweep))
 print("I am skipping %i steps before next measurement" % SKIP_)
 
 #plt.plot(all_suscepts)

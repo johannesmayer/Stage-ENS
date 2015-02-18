@@ -62,7 +62,7 @@ twopi = 2*math.pi
 J = float(sys.argv[2])
 beta = float(sys.argv[3])
 moves_per_sweep = int(sys.argv[5])
-step = 0.1*pi
+step = 0.7*pi
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 
@@ -75,7 +75,7 @@ successor = 0.
 n_times = int(sys.argv[4])
 
 
-SKIP_ = 1
+SKIP_ = 10
 
 for i_sweep in xrange(n_times):
     
@@ -98,7 +98,6 @@ logfile.close()
         
 print("RATE: "+str(successor/n_times/moves_per_sweep))
 print("DURATION: "+str(time.time()-starting_time))
-print("MOVES PER SWEEP: "+str(moves_per_sweep))
 print("I am skipping %i steps before next measurement" % SKIP_)
 
 #plt.plot(all_suscepts)
@@ -106,4 +105,4 @@ print("I am skipping %i steps before next measurement" % SKIP_)
 #plt.ylabel('magnetic susceptibility')
 #plt.show()
 
-numpy.save("Grid_Data/xy_grid_markov_suscepts_beta_"+str(beta)+"_L_"+str(L)+".npy",all_suscepts)
+#numpy.save("Grid_Data/xy_grid_markov_suscepts_beta_"+str(beta)+"_L_"+str(L)+".npy",all_suscepts)

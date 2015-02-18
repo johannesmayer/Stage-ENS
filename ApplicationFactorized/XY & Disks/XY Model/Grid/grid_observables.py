@@ -28,7 +28,7 @@ event_thermal_cutoff = int(sys.argv[3])
 markov_thermal_cutoff = int(sys.argv[4])
 
 J = 1.
-delta_max = 1000
+delta_max = 10000
 stepsize = 1
 
 event_observable = []
@@ -91,8 +91,8 @@ print 'measured correlation time for ECEC: '+str(event_tau_corr)
 print 'measured correlation time for MCMC: '+str(markov_tau_corr)
 print "RATIO: "+str(markov_tau_corr/event_tau_corr)
 
-plt.plot(all_deltas,event_correlator,'r.', label='ECMC')
-plt.plot(all_deltas,markov_correlator,'b.', label='MCMC')
+plt.plot(all_deltas,event_correlator,'r.', label='ECMC, tau= %f' %event_tau_corr)
+plt.plot(all_deltas,markov_correlator,'b.', label='MCMC, tau = %f' %markov_tau_corr)
 
 plt.plot(x, numpy.exp(-x/event_tau_corr),'r-',alpha=0.7, lw=3)
 plt.plot(x, numpy.exp(-x/markov_tau_corr),'b-',alpha=0.7, lw=3)

@@ -4,3 +4,9 @@
 *.npy
 
 *.gif
+
+*.dat
+
+*.sh
+
+*.ipynb
