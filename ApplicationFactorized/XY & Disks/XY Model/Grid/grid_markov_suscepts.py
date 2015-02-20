@@ -92,7 +92,7 @@ for i_sweep in xrange(n_times):
             spins[who_moves] = (spins[who_moves] + move)%twopi
             successor += 1
     if i_sweep % SKIP_ == 0:
-        all_suscepts.append(abs(xy_magnetisation(spins))**2)   
+        all_suscepts.append(float(N)*abs(xy_magnetisation(spins))**2)   
 logfile.close()
         
 print("RATE: "+str(successor/n_times/moves_per_sweep))

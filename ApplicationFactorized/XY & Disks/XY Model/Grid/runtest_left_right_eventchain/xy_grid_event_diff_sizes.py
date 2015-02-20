@@ -71,7 +71,7 @@ if len(sys.argv) != 5 :
 
 
 
-outdir = 'eventchain_longrun_varL_beta_1.1199'
+outdir = 'eventchain_left_right_test'
 if not os.path.isdir(outdir):
     os.makedirs(outdir)
     
@@ -89,8 +89,14 @@ energy_max = energy(J,math.pi)
 chain_length = float(sys.argv[4])*pi
 n_times = int(sys.argv[3])
 
+#define a variable which determines in which direction the spins are turned
+# 0 for mathematical clockwise 1 for normal clockwise
 
-different_sizes = [10, 15, 20]
+all_directions = [0,1]
+
+direction = random.choice(all_directions)
+
+different_sizes = [20]
 
 for L in different_sizes:
 
@@ -108,8 +114,10 @@ for L in different_sizes:
         if i_sweep % (n_times/100) == 0:
             print("PROGRESS: "+str(100*i_sweep/n_times)+"% in "+str(time.time()-starting_time)+" SECONDS")
             logfile = open('status.dat','w')
-            logfile.write(str(L) + ' %i / %i \n' % (i_sweep, n_times))
+            logfile.write(' %i / %i \n' % (i_sweep, n_times))
             logfile.close()
+        
+        direction = 1
         
         #resample the lifting variable and then move spins throught lattice
         total_displacement = 0.0
@@ -141,10 +149,10 @@ for L in different_sizes:
             
             # see if displacement will exceed chain length and if yes truncate
             if displacement + total_displacement < chain_length:
-                spins[lift] = (spins[lift]+displacement)%twopi
+                spins[lift] = (spins[lift]+((-1)**direction)*displacement)%twopi
             else:
                 displacement = chain_length - total_displacement
-                spins[lift] = (spins[lift]+displacement)%twopi  
+                spins[lift] = (spins[lift]+((-1)**direction)*displacement)%twopi  
                 #here append the susceptibility to its array
                 all_suscepts.append(abs(xy_magnetisation(spins)) ** 2)
     
@@ -154,10 +162,13 @@ for L in different_sizes:
         
         
     logfile.close()    
+    
     print 80 * "*"
+    
     print("DURATION OF THIS MEASUREMENT: "+str(time.time()-starting_time))
     print("CHAIN LENGTH CHOSEN TO BE: "+str(chain_length))
     print("MOVES PER EVENT CHAIN LENGTH: "+str(numpy.mean(chain_moves)))
+
     print 80 * "*"
     
         
