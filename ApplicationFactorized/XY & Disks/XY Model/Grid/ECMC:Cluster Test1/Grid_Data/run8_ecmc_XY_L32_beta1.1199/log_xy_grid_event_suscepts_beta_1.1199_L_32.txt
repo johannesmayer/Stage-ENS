@@ -1,0 +1,115 @@
+Start with event chain run L 32 and beta = 1.119900 
+Number of event chains: 250000 with length 102.000000 pi 
+   1 % done -     157.6 seconds
+  2 % done -     314.7 seconds
+  3 % done -     471.9 seconds
+  4 % done -     629.3 seconds
+  5 % done -     786.6 seconds
+  6 % done -     943.9 seconds
+  7 % done -    1101.2 seconds
+  8 % done -    1258.4 seconds
+  9 % done -    1415.8 seconds
+ 10 % done -    1572.9 seconds
+saving 25001 data
+ 11 % done -    1730.4 seconds
+ 12 % done -    1887.9 seconds
+ 13 % done -    2045.4 seconds
+ 14 % done -    2202.7 seconds
+ 15 % done -    2359.9 seconds
+ 16 % done -    2517.1 seconds
+ 17 % done -    2674.6 seconds
+ 18 % done -    2831.7 seconds
+ 19 % done -    2989.3 seconds
+ 20 % done -    3146.8 seconds
+saving 50001 data
+ 21 % done -    3304.2 seconds
+ 22 % done -    3461.6 seconds
+ 23 % done -    3619.2 seconds
+ 24 % done -    3776.6 seconds
+ 25 % done -    3934.3 seconds
+ 26 % done -    4091.7 seconds
+ 27 % done -    4249.1 seconds
+ 28 % done -    4406.4 seconds
+ 29 % done -    4564.0 seconds
+ 30 % done -    4721.6 seconds
+saving 75001 data
+ 31 % done -    4879.2 seconds
+ 32 % done -    5036.8 seconds
+ 33 % done -    5194.5 seconds
+ 34 % done -    5352.2 seconds
+ 35 % done -    5509.4 seconds
+ 36 % done -    5667.1 seconds
+ 37 % done -    5824.9 seconds
+ 38 % done -    5982.8 seconds
+ 39 % done -    6140.4 seconds
+ 40 % done -    6298.2 seconds
+saving 100001 data
+ 41 % done -    6455.6 seconds
+ 42 % done -    6613.0 seconds
+ 43 % done -    6770.4 seconds
+ 44 % done -    6927.8 seconds
+ 45 % done -    7085.1 seconds
+ 46 % done -    7242.6 seconds
+ 47 % done -    7400.0 seconds
+ 48 % done -    7557.7 seconds
+ 49 % done -    7715.3 seconds
+ 50 % done -    7872.7 seconds
+saving 125001 data
+ 51 % done -    8030.0 seconds
+ 52 % done -    8187.2 seconds
+ 53 % done -    8344.7 seconds
+ 54 % done -    8502.2 seconds
+ 55 % done -    8659.7 seconds
+ 56 % done -    8817.1 seconds
+ 57 % done -    8974.6 seconds
+ 58 % done -    9131.9 seconds
+ 59 % done -    9289.1 seconds
+ 60 % done -    9446.4 seconds
+saving 150001 data
+ 61 % done -    9604.0 seconds
+ 62 % done -    9761.4 seconds
+ 63 % done -    9919.0 seconds
+ 64 % done -   10076.1 seconds
+ 65 % done -   10233.5 seconds
+ 66 % done -   10390.8 seconds
+ 67 % done -   10548.1 seconds
+ 68 % done -   10705.6 seconds
+ 69 % done -   10862.7 seconds
+ 70 % done -   11019.9 seconds
+saving 175001 data
+ 71 % done -   11177.2 seconds
+ 72 % done -   11334.3 seconds
+ 73 % done -   11491.1 seconds
+ 74 % done -   11648.2 seconds
+ 75 % done -   11805.2 seconds
+ 76 % done -   11962.2 seconds
+ 77 % done -   12119.3 seconds
+ 78 % done -   12276.3 seconds
+ 79 % done -   12433.3 seconds
+ 80 % done -   12590.2 seconds
+saving 200001 data
+ 81 % done -   12747.5 seconds
+ 82 % done -   12904.4 seconds
+ 83 % done -   13061.7 seconds
+ 84 % done -   13218.9 seconds
+ 85 % done -   13376.2 seconds
+ 86 % done -   13533.4 seconds
+ 87 % done -   13690.6 seconds
+ 88 % done -   13848.1 seconds
+ 89 % done -   14005.2 seconds
+ 90 % done -   14162.4 seconds
+saving 225001 data
+ 91 % done -   14320.1 seconds
+ 92 % done -   14477.5 seconds
+ 93 % done -   14635.1 seconds
+ 94 % done -   14792.7 seconds
+ 95 % done -   14950.0 seconds
+ 96 % done -   15107.4 seconds
+ 97 % done -   15264.5 seconds
+ 98 % done -   15421.8 seconds
+ 99 % done -   15578.9 seconds
+saving 250000 data (all)
+Simulation is over!
+Total runtime of simulation: 15736.060000 
+Average Moves per event chain: 361.798424 
+File is saved, thank you for traveling with us

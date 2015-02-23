@@ -69,37 +69,46 @@ if len(sys.argv) != 6 :
 
 
 L = int(sys.argv[1])
-N = L*L
-
-nbr, site_dic, x_y_dic = square_neighbors(L)
-
-
 J = float(sys.argv[2])
 beta = float(sys.argv[3])
+chain_length = float(sys.argv[4])*math.pi
+n_times = int(sys.argv[5])
+
+# make a logfile in order to write stuff in it
+
+outdir = "Grid_Data"
+ID = 'xy_grid_event_suscepts_beta_%.4f_L_%i' %(beta,L)
+filename = outdir + '/'+ ID +'.npy'
+
+if not os.path.isdir(outdir):
+    os.makedirs(outdir)
+
+logfile = open('log_%s.txt' %ID,'w')
+logfile.write('Start with event chain run L %i and beta = %f \n' %(L,beta))
+logfile.write('Number of event chains: %i with length %f pi \n '% (n_times, chain_length/math.pi))
+
+N = L*L
+nbr, site_dic, x_y_dic = square_neighbors(L)
+
 energy_max = energy(J,math.pi)
 
 pi = math.pi
 twopi = 2*math.pi
 
 all_suscepts = []
-#chain_length = 2.*math.pi
-chain_length = float(sys.argv[4])*pi
 chain_moves = []
-n_times = int(sys.argv[5])
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
-outdir = "Grid_Data"
-if not os.path.isdir(outdir):
-    os.makedirs(outdir)
-
-starting_time = time.time()
+starting_time = time.clock()
 
 
 for i_sweep in range(n_times):
-    if i_sweep % (n_times/100) == 0:
-        print("PROGRESS: "+str(100*i_sweep/n_times)+"% in "+str(time.time()-starting_time)+" SECONDS")
-    
+    if (i_sweep*100) % n_times == 0 and i_sweep != 0:
+        percentage = i_sweep * 100 / n_times
+        logfile.write('%3i %% done - %9.1f seconds\f \n' % (percentage, time.clock() - starting_time))
+        logfile.flush()
+                    
     #resample the lifting variable and then move spins throught lattice
     total_displacement = 0.0
     lift = random.randrange(N)
@@ -141,13 +150,9 @@ for i_sweep in range(n_times):
         lift = whos_next
     chain_moves.append(moves_this_chain)
     
-print("DURATION: "+str(time.time()-starting_time))
+logfile.write('Simulation is over!\n')
+logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
 avg_moves = numpy.mean(chain_moves)
-print("AVG MOVES PER CHAIN: ")+str(avg_moves)
-  
-plt.plot(all_suscepts)
-plt.xlabel('number of event chains')
-plt.ylabel('magnetic susceptibility')
-plt.show()
-
-numpy.save(outdir+"/xy_grid_event_suscepts_beta_"+str(beta)+"_L_"+str(L)+"avg_mov_per_l_"+str(avg_moves)+".npy",all_suscepts)
+logfile.write('Average Moves per event chain: %f \n' % avg_moves)
+numpy.save(filename,all_suscepts)
+logfile.write('File is saved, thank you for traveling with us')

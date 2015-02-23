@@ -1,0 +1,105 @@
+Start with event chain run L 32 and beta = 1.119900 
+Number of event chains: 1000 with length 102.000000 pi 
+   1 % done -       0.3 seconds 
+  2 % done -       0.7 seconds 
+  3 % done -       1.0 seconds 
+  4 % done -       1.3 seconds 
+  5 % done -       1.7 seconds 
+  6 % done -       2.0 seconds 
+  7 % done -       2.4 seconds 
+  8 % done -       2.7 seconds 
+  9 % done -       3.1 seconds 
+ 10 % done -       3.4 seconds 
+ 11 % done -       3.7 seconds 
+ 12 % done -       4.1 seconds 
+ 13 % done -       4.4 seconds 
+ 14 % done -       4.7 seconds 
+ 15 % done -       5.1 seconds 
+ 16 % done -       5.4 seconds 
+ 17 % done -       5.8 seconds 
+ 18 % done -       6.1 seconds 
+ 19 % done -       6.4 seconds 
+ 20 % done -       6.8 seconds 
+ 21 % done -       7.1 seconds 
+ 22 % done -       7.4 seconds 
+ 23 % done -       7.8 seconds 
+ 24 % done -       8.1 seconds 
+ 25 % done -       8.4 seconds 
+ 26 % done -       8.8 seconds 
+ 27 % done -       9.1 seconds 
+ 28 % done -       9.4 seconds 
+ 29 % done -       9.7 seconds 
+ 30 % done -      10.1 seconds 
+ 31 % done -      10.4 seconds 
+ 32 % done -      10.7 seconds 
+ 33 % done -      11.1 seconds 
+ 34 % done -      11.4 seconds 
+ 35 % done -      11.7 seconds 
+ 36 % done -      12.0 seconds 
+ 37 % done -      12.4 seconds 
+ 38 % done -      12.7 seconds 
+ 39 % done -      13.0 seconds 
+ 40 % done -      13.4 seconds 
+ 41 % done -      13.7 seconds 
+ 42 % done -      14.0 seconds 
+ 43 % done -      14.4 seconds 
+ 44 % done -      14.7 seconds 
+ 45 % done -      15.0 seconds 
+ 46 % done -      15.3 seconds 
+ 47 % done -      15.7 seconds 
+ 48 % done -      16.0 seconds 
+ 49 % done -      16.3 seconds 
+ 50 % done -      16.7 seconds 
+ 51 % done -      17.0 seconds 
+ 52 % done -      17.3 seconds 
+ 53 % done -      17.6 seconds 
+ 54 % done -      18.0 seconds 
+ 55 % done -      18.3 seconds 
+ 56 % done -      18.6 seconds 
+ 57 % done -      18.9 seconds 
+ 58 % done -      19.3 seconds 
+ 59 % done -      19.6 seconds 
+ 60 % done -      19.9 seconds 
+ 61 % done -      20.3 seconds 
+ 62 % done -      20.6 seconds 
+ 63 % done -      20.9 seconds 
+ 64 % done -      21.2 seconds 
+ 65 % done -      21.6 seconds 
+ 66 % done -      21.9 seconds 
+ 67 % done -      22.2 seconds 
+ 68 % done -      22.5 seconds 
+ 69 % done -      22.9 seconds 
+ 70 % done -      23.2 seconds 
+ 71 % done -      23.5 seconds 
+ 72 % done -      23.8 seconds 
+ 73 % done -      24.2 seconds 
+ 74 % done -      24.5 seconds 
+ 75 % done -      24.8 seconds 
+ 76 % done -      25.2 seconds 
+ 77 % done -      25.5 seconds 
+ 78 % done -      25.8 seconds 
+ 79 % done -      26.1 seconds 
+ 80 % done -      26.5 seconds 
+ 81 % done -      26.8 seconds 
+ 82 % done -      27.1 seconds 
+ 83 % done -      27.5 seconds 
+ 84 % done -      27.8 seconds 
+ 85 % done -      28.1 seconds 
+ 86 % done -      28.5 seconds 
+ 87 % done -      28.8 seconds 
+ 88 % done -      29.1 seconds 
+ 89 % done -      29.4 seconds 
+ 90 % done -      29.8 seconds 
+ 91 % done -      30.1 seconds 
+ 92 % done -      30.4 seconds 
+ 93 % done -      30.7 seconds 
+ 94 % done -      31.1 seconds 
+ 95 % done -      31.4 seconds 
+ 96 % done -      31.7 seconds 
+ 97 % done -      32.0 seconds 
+ 98 % done -      32.4 seconds 
+ 99 % done -      32.7 seconds 
+Simulation is over!
+Total runtime of simulation: 33.012434 
+Average Moves per event chain: 362.463000 
+File is saved, thank you for traveling with us

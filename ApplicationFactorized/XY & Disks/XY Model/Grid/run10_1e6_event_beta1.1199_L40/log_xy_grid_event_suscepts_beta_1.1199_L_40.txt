@@ -1,0 +1,4 @@
+Start with event chain run L 40 and beta = 1.119900 
+Number of event chains: 5000000 with length 10.080000 pi 
+   1 % done -     234.6 seconds 
+Running average of average moves: 36.703960 

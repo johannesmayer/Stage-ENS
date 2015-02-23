@@ -100,6 +100,8 @@ starting_time = time.time()
 
 outdir = "Grid_Data"
 
+
+
 if not os.path.isdir(outdir):
     os.makedirs(outdir)
 

@@ -14,9 +14,9 @@ print 'a'
 
 ev_hist, ev_binning = numpy.histogram(ev,bins=100,normed=True)
 ma_hist, ma_binning = numpy.histogram(ma, bins=100, normed = True)
-ev_hist = plt.hist(ev, ev_binning, normed= True, alpha=0.5, label='ECMC data')
+ev_hist = plt.hist(ev, ev_binning, normed= True, alpha=0.5, label='ECMC data',histtype = 'step')
 #ma_hist = plt.hist(ma, ma_binning,normed=True, alpha = 0.5, label='markov data')
-ma_hist = plt.hist(ma, ev_binning,normed=True, alpha = 0.5, label='markov data')
+ma_hist = plt.hist(ma, ev_binning,normed=True, alpha = 0.5, label='markov data',histtype = 'step')
 
 plt.title("Magnetic susceptibility histogram")
 plt.xlabel('Magnetic susceptibility')
