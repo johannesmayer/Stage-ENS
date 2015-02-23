@@ -2,3 +2,73 @@ Start with event chain run L 40 and beta = 1.119900
 Number of event chains: 5000000 with length 10.080000 pi 
    1 % done -     234.6 seconds 
 Running average of average moves: 36.703960 
+  2 % done -     468.7 seconds 
+Running average of average moves: 36.699750 
+  3 % done -     701.3 seconds 
+Running average of average moves: 36.699913 
+  4 % done -     933.0 seconds 
+Running average of average moves: 36.695995 
+  5 % done -    1164.7 seconds 
+Running average of average moves: 36.691428 
+  6 % done -    1396.4 seconds 
+Running average of average moves: 36.688580 
+  7 % done -    1627.9 seconds 
+Running average of average moves: 36.686680 
+  8 % done -    1863.1 seconds 
+Running average of average moves: 36.682527 
+  9 % done -    2095.8 seconds 
+Running average of average moves: 36.679689 
+ 10 % done -    2331.4 seconds 
+Running average of average moves: 36.680494 
+ 11 % done -    2566.7 seconds 
+Running average of average moves: 36.680022 
+ 12 % done -    2802.7 seconds 
+Running average of average moves: 36.678033 
+ 13 % done -    3034.3 seconds 
+Running average of average moves: 36.675802 
+ 14 % done -    3267.1 seconds 
+Running average of average moves: 36.674200 
+ 15 % done -    3503.1 seconds 
+Running average of average moves: 36.674489 
+ 16 % done -    3736.4 seconds 
+Running average of average moves: 36.673763 
+ 17 % done -    3968.2 seconds 
+Running average of average moves: 36.673814 
+ 18 % done -    4200.0 seconds 
+Running average of average moves: 36.675584 
+ 19 % done -    4431.7 seconds 
+Running average of average moves: 36.676334 
+ 20 % done -    4663.3 seconds 
+Running average of average moves: 36.675872 
+ 21 % done -    4895.2 seconds 
+Running average of average moves: 36.676821 
+ 22 % done -    5126.8 seconds 
+Running average of average moves: 36.676510 
+ 23 % done -    5358.3 seconds 
+Running average of average moves: 36.676906 
+ 24 % done -    5589.8 seconds 
+Running average of average moves: 36.676154 
+ 25 % done -    5821.5 seconds 
+Running average of average moves: 36.675634 
+ 26 % done -    6053.3 seconds 
+Running average of average moves: 36.675226 
+ 27 % done -    6285.9 seconds 
+Running average of average moves: 36.675467 
+ 28 % done -    6517.8 seconds 
+Running average of average moves: 36.674546 
+ 29 % done -    6750.9 seconds 
+Running average of average moves: 36.674237 
+ 30 % done -    6984.8 seconds 
+Running average of average moves: 36.674671 
+ 31 % done -    7219.4 seconds 
+Running average of average moves: 36.673486 
+ 32 % done -    7455.6 seconds 
+Running average of average moves: 36.674252 
+ 33 % done -    7691.1 seconds 
+Running average of average moves: 36.674819 
+ 34 % done -    7925.1 seconds 
+Running average of average moves: 36.674265 
+ 35 % done -    8158.6 seconds 
+Running average of average moves: 36.675086 
+ 36 % done -    8394.2 seconds 
+Running average of average moves: 36.674472 
