@@ -177,13 +177,17 @@ for i_sweep in range(n_times):
     chain_moves.append(moves_this_chain)
     if (i_sweep * 10) % n_times == 0:
         numpy.save(filename,all_suscepts)
-        print 'just saved %i percent' %(i_sweep/n_times)
-    
-plt.plot(all_suscepts)
-plt.show()   
+        logfile.write(80 * '*' + '\n')
+        logfile.write('just saved %i percent, data of length %i \n' %(100*i_sweep/float(n_times), len(all_suscepts)))
+        logfile.write(80 * '*' + '\n')
+  
 logfile.write('Simulation is over!\n')
 logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
 avg_moves = numpy.mean(chain_moves)
 logfile.write('Average Moves per event chain: %f \n' % avg_moves)
 numpy.save(filename,all_suscepts)
-logfile.write('File is saved, thank you for traveling with us')
+logfile.write('File is saved of length %i, thank you for traveling with us' %len(all_suscepts))
+logfile.close()
+
+plt.plot(all_suscepts)
+plt.show() 

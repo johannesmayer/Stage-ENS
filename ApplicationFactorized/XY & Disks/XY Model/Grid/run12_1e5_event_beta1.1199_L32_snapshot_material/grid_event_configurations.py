@@ -97,10 +97,12 @@ n_times = int(sys.argv[5])
 
 #make a logfile in order to write stuff in it
 
-poss_directions = [-1,1]
+poss_directions = [1]
+
+snap_every_percent = 5
 
 outdir = "Grid_Data"
-ID = 'xy_grid_event_suscepts_beta_%.4f_L_%i_directions_%i' %(beta,L, sum(poss_directions))
+ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_percent' %(beta,L, sum(poss_directions),snap_every_percent)
 filename = outdir + '/'+ ID +'.npy'
 
 if not os.path.isdir(outdir):
@@ -118,7 +120,7 @@ energy_max = energy(J,math.pi)
 pi = math.pi
 twopi = 2*math.pi
 
-all_suscepts = []
+all_snapshots = []
 chain_moves = []
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
@@ -170,20 +172,26 @@ for i_sweep in range(n_times):
             displacement = chain_length - total_displacement
             spins[lift] = (spins[lift]+ direction * displacement)%twopi  
             #here append the susceptibility to its array
-            all_suscepts.append(float(N)*abs(xy_magnetisation(spins)) ** 2)
- 
+            if (100 * i_sweep / float(snap_every_percent)) % n_times == 0:
+                all_snapshots.append(spins[:])
+
+                        
+            
+            
         total_displacement += displacement
         lift = whos_next
     chain_moves.append(moves_this_chain)
-    if (i_sweep * 10) % n_times == 0:
-        numpy.save(filename,all_suscepts)
-        print 'just saved %i percent' %(i_sweep/n_times)
-    
-plt.plot(all_suscepts)
-plt.show()   
+    if (10 * i_sweep ) % n_times == 0:
+        numpy.save(filename,all_snapshots)
+        logfile.write(80 * '*' + '\n')
+        logfile.write('just saved the data after %i percent \n' %(100*i_sweep/float(n_times)))
+        logfile.write(80 * '*' + '\n')
+  
 logfile.write('Simulation is over!\n')
 logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
 avg_moves = numpy.mean(chain_moves)
 logfile.write('Average Moves per event chain: %f \n' % avg_moves)
-numpy.save(filename,all_suscepts)
-logfile.write('File is saved, thank you for traveling with us')
+numpy.save(filename,all_snapshots)
+logfile.write('File is saved of length %i, thank you for traveling with us' %len(all_snapshots))
+logfile.close()
+

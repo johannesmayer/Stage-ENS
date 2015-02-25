@@ -97,10 +97,16 @@ n_times = int(sys.argv[5])
 
 #make a logfile in order to write stuff in it
 
-poss_directions = [-1,1]
+poss_directions = [1]
+
+
+guessed_equilibration_time = 0
+snap_every_n_chain = 1
+
+
 
 outdir = "Grid_Data"
-ID = 'xy_grid_event_suscepts_beta_%.4f_L_%i_directions_%i' %(beta,L, sum(poss_directions))
+ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains' %(beta,L, sum(poss_directions),snap_every_n_chain)
 filename = outdir + '/'+ ID +'.npy'
 
 if not os.path.isdir(outdir):
@@ -118,16 +124,23 @@ energy_max = energy(J,math.pi)
 pi = math.pi
 twopi = 2*math.pi
 
-all_suscepts = []
+all_inbetween_suscepts=[]
+all_end_suscepts = []
 chain_moves = []
+
+global_displacement = 0.0
+threshold_counter = 1.0
+
+resample_after =  0.25*chain_length/float(1)
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
 starting_time = time.clock()
 
-for i_sweep in range(n_times):
-    if (i_sweep*100) % n_times == 0 and i_sweep != 0:
-        percentage = i_sweep * 100 / n_times
+for ith_chain in xrange(n_times):
+    if (ith_chain*100) % n_times == 0 and ith_chain != 0:
+        percentage = ith_chain * 100 / n_times
+        print '%',percentage
         logfile.write('%3i %% done - %9.1f seconds\f \n' % (percentage, time.clock() - starting_time))
         logfile.write('Running average of average moves: %f \n' %numpy.mean(chain_moves))
         logfile.flush()
@@ -162,28 +175,70 @@ for i_sweep in range(n_times):
         
         rest_displacement, n_turns = calc_displacement(used_energy, J, delta_phi,direction)  
         displacement = n_turns*twopi + rest_displacement
-         
+        
+        
+#####+######+ in this block one samples every unit one specifies above ######+######+######+######+
+        temp_global_displacement = global_displacement
+        use_to_sample_displacement = displacement
+        while temp_global_displacement + use_to_sample_displacement >= threshold_counter * resample_after:
+            rest_to_displace = use_to_sample_displacement - ( threshold_counter * resample_after - temp_global_displacement )
+            print rest_to_displace
+            #here the threshold counter grows which is bad
+            use_to_sample_displacement = threshold_counter * resample_after - temp_global_displacement 
+            use_to_sample_spins = spins[:]
+            use_to_sample_spins[lift] = (use_to_sample_spins[lift] + direction*use_to_sample_displacement)%twopi
+            all_inbetween_suscepts.append(float(N)*abs(xy_magnetisation(use_to_sample_spins[:]))**2)
+            temp_global_displacement += use_to_sample_displacement
+            use_to_sample_displacement = rest_to_displace
+            threshold_counter += 1  
+            
+        print 'notstuck'     
+######+######+######+######+######+######+######+######+######+######+######+######+######+######+
         # see if displacement will exceed chain length and if yes truncate
+
         if displacement + total_displacement < chain_length:
             spins[lift] = (spins[lift]+ direction * displacement)%twopi
         else:
             displacement = chain_length - total_displacement
             spins[lift] = (spins[lift]+ direction * displacement)%twopi  
             #here append the susceptibility to its array
-            all_suscepts.append(float(N)*abs(xy_magnetisation(spins)) ** 2)
- 
+            if ith_chain >= guessed_equilibration_time and ith_chain % snap_every_n_chain == 0:
+                all_end_suscepts.append(float(N) * abs(xy_magnetisation(spins[:]))**2)
+                
+        global_displacement += displacement   
+                
+            
+            
         total_displacement += displacement
         lift = whos_next
     chain_moves.append(moves_this_chain)
-    if (i_sweep * 10) % n_times == 0:
-        numpy.save(filename,all_suscepts)
-        print 'just saved %i percent' %(i_sweep/n_times)
-    
-plt.plot(all_suscepts)
-plt.show()   
+    if (10 * ith_chain ) % n_times == 0:
+        #numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
+        logfile.write(80 * '*' + '\n')
+        logfile.write('just saved the data after %i percent \n' %(100*ith_chain/float(n_times)))
+        logfile.write(80 * '*' + '\n')
+  
+"""
+all_end_suscepts = numpy.array(all_end_suscepts)
+all_inbetween_suscepts = numpy.array(all_end_suscepts)
+
+all_difference = all_end_suscepts - all_inbetween_suscepts
+print numpy.nonzero(all_difference)
+"""
+
+
+
+dummy , binning = numpy.histogram(all_end_suscepts,bins = 100, normed = True)
+plt.hist(all_end_suscepts, binning, normed = True, alpha = 0.5)
+plt.hist(all_inbetween_suscepts, binning, normed = True, alpha = 0.5)
+plt.show()
+
 logfile.write('Simulation is over!\n')
 logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
 avg_moves = numpy.mean(chain_moves)
 logfile.write('Average Moves per event chain: %f \n' % avg_moves)
-numpy.save(filename,all_suscepts)
+#numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
 logfile.write('File is saved, thank you for traveling with us')
+logfile.close()
+
+print('YOU DID COMMENT OUT THE SAVING LINES!!!!!!')
