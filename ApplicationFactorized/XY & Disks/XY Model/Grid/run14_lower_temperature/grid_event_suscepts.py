@@ -2,7 +2,7 @@
 #2 spin XY model subroutine
 #author: JM
 #Date:  2015/02/23
-import numpy, random, math, time, sys, matplotlib.pylab as plt, cmath, os
+import numpy, random, math, time, sys, cmath, os
 
 ##################+ DEFINE ALL FUNCTIONS NEEDED IN THIS SECTION +##################
 def energy(J,x):
@@ -97,16 +97,10 @@ n_times = int(sys.argv[5])
 
 #make a logfile in order to write stuff in it
 
-poss_directions = [1]
-
-
-guessed_equilibration_time = 0
-snap_every_n_chain = 1
-
-
+poss_directions = [-1,1]
 
 outdir = "Grid_Data"
-ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains' %(beta,L, sum(poss_directions),snap_every_n_chain)
+ID = 'xy_grid_event_suscepts_beta_%.4f_L_%i_directions_%i' %(beta,L, sum(poss_directions))
 filename = outdir + '/'+ ID +'.npy'
 
 if not os.path.isdir(outdir):
@@ -124,26 +118,16 @@ energy_max = energy(J,math.pi)
 pi = math.pi
 twopi = 2*math.pi
 
-all_inbetween_suscepts=[]
-all_end_suscepts = []
+all_suscepts = []
 chain_moves = []
-
-global_displacement = 0.0
-threshold_counter = 1.0
-global_rest_displacement = 0.0
-
-resample_after =  1.0*chain_length/float(1.0)
-
-random.seed(1234525)
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
 starting_time = time.clock()
 
-for ith_chain in xrange(n_times):
-    if (ith_chain*100) % n_times == 0 and ith_chain != 0:
-        percentage = ith_chain * 100 / n_times
-        print '%',percentage
+for i_sweep in range(n_times):
+    if (i_sweep*100) % n_times == 0 and i_sweep != 0:
+        percentage = i_sweep * 100 / n_times
         logfile.write('%3i %% done - %9.1f seconds\f \n' % (percentage, time.clock() - starting_time))
         logfile.write('Running average of average moves: %f \n' %numpy.mean(chain_moves))
         logfile.flush()
@@ -170,6 +154,7 @@ for ith_chain in xrange(n_times):
             distance_comparison.append(calc_displacement(random_energy,J,number,direction)[0])
             energy_vault.append(random_energy)
         
+        #print distance_comparison    
                     
         whos_next = nbr[lift][numpy.argmin(distance_comparison)]
         delta_phi = neigh_deltas[numpy.argmin(distance_comparison)]
@@ -177,65 +162,30 @@ for ith_chain in xrange(n_times):
         
         rest_displacement, n_turns = calc_displacement(used_energy, J, delta_phi,direction)  
         displacement = n_turns*twopi + rest_displacement
-        
-        
-#####+######+ in this block one samples every unit one specifies above ######+######+######+######+
-        temp_global_displacement = global_displacement + global_rest_displacement
-        use_to_sample_displacement = displacement 
-        while temp_global_displacement + use_to_sample_displacement >= threshold_counter * resample_after:                
-            print 'dis',displacement
-            global_rest_displacement = 0
-            rest_to_displace = use_to_sample_displacement - ( threshold_counter * resample_after - temp_global_displacement )
-            use_to_sample_displacement = threshold_counter * resample_after - temp_global_displacement 
-            use_to_sample_spins = spins[:]
-            use_to_sample_spins[lift] = (use_to_sample_spins[lift] + direction*use_to_sample_displacement)%twopi
-            all_inbetween_suscepts.append(float(N)*abs(xy_magnetisation(use_to_sample_spins[:]))**2)
-            print ith_chain,'mid',all_inbetween_suscepts[-1]
-            # the problem in this code is if i exceed the next chain length with the displacement I have, then i do not move the spin that i would have 
-            # to move because i do not resample the lifting variable
-            threshold_counter += 1  
-            if temp_global_displacement + displacement > (ith_chain+2)*chain_length:
-                global_rest_displacement = rest_to_displace
-                break
-            temp_global_displacement += use_to_sample_displacement
-            use_to_sample_displacement = rest_to_displace
-                
-######+######+######+######+######+######+######+######+######+######+######+######+######+######+
+         
         # see if displacement will exceed chain length and if yes truncate
-
         if displacement + total_displacement < chain_length:
             spins[lift] = (spins[lift]+ direction * displacement)%twopi
         else:
             displacement = chain_length - total_displacement
             spins[lift] = (spins[lift]+ direction * displacement)%twopi  
             #here append the susceptibility to its array
-            if ith_chain >= guessed_equilibration_time and ith_chain % snap_every_n_chain == 0:
-                all_end_suscepts.append(float(N) * abs(xy_magnetisation(spins[:])) ** 2)
-                print ith_chain, 'end',all_end_suscepts[-1]
-        global_displacement += displacement   
-
+            all_suscepts.append(float(N)*abs(xy_magnetisation(spins)) ** 2)
+ 
         total_displacement += displacement
         lift = whos_next
-
     chain_moves.append(moves_this_chain)
-    if (10 * ith_chain ) % n_times == 0:
-        #numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
+    if (i_sweep * 10) % n_times == 0:
+        numpy.save(filename,all_suscepts)
         logfile.write(80 * '*' + '\n')
-        logfile.write('just saved the data after %i percent \n' %(100*ith_chain/float(n_times)))
+        logfile.write('just saved %i percent, data of length %i \n' %(100*i_sweep/float(n_times), len(all_suscepts)))
         logfile.write(80 * '*' + '\n')
-
-
-dummy , binning = numpy.histogram(all_end_suscepts,bins = 100, normed = True)
-plt.hist(all_end_suscepts, binning, normed = True, alpha = 0.5)
-plt.hist(all_inbetween_suscepts, binning, normed = True, alpha = 0.5)
-plt.show()
-
+  
 logfile.write('Simulation is over!\n')
 logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
 avg_moves = numpy.mean(chain_moves)
 logfile.write('Average Moves per event chain: %f \n' % avg_moves)
-#numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
-logfile.write('File is saved, thank you for traveling with us')
+numpy.save(filename,all_suscepts)
+logfile.write('File is saved of length %i, thank you for traveling with us' %len(all_suscepts))
 logfile.close()
 
-print('YOU DID COMMENT OUT THE SAVING LINES!!!!!!')
