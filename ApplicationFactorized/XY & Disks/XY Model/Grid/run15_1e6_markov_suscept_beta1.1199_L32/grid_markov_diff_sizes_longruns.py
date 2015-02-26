@@ -67,6 +67,8 @@ moves_per_sweep = int(sys.argv[4])
 step = 0.7*pi
 
 outdir = "Grid_Data"
+if not os.path.isdir(outdir):
+    os.makedirs(outdir)
 
 for L in different_sizes:
     
@@ -77,8 +79,6 @@ for L in different_sizes:
     ID = 'markov_suscepts_beta_%.4f_L_%i' %(beta,L)
     filename = outdir + '/'+ ID +'.npy'
 
-    if not os.path.isdir(outdir):
-        os.makedirs(outdir)
 
     logfile = open('log_%s.txt' %ID,'w')
     logfile.write('Start with  MCMC run L %i and beta = %f with maximum stepsize %f \n' %(L,beta,step))
@@ -106,8 +106,7 @@ for L in different_sizes:
                 spins[who_moves] = (spins[who_moves] + move)%twopi
                 successor += 1
 
-        if i_sweep % 2 == 0:
-            all_suscepts.append(abs(xy_magnetisation(spins)) ** 2 * float(N))
+        all_suscepts.append(abs(xy_magnetisation(spins)) ** 2 * float(N))
 
         if (i_sweep * 10) % n_times == 0:
             logfile.write('saving tmp file: %i data \n' % len(all_suscepts))
