@@ -85,8 +85,8 @@ def xy_magnetisation(spin_config):
       
 ##########+#########+##########+#########+##########+#########+##########+#########
 
-if len(sys.argv) != 6 :
-    sys.exit("GIVE ME THE INPUT IN THE FORM: L : J : BETA : CHAINLENGHT IN UNITS OF PI : NUMBER OF CHAINS")
+if len(sys.argv) != 7 :
+    sys.exit("GIVE ME THE INPUT IN THE FORM: L : J : BETA : CHAINLENGHT IN UNITS OF PI : NUMBER OF CHAINS : SAMPLE EVERY _ PI")
 
 
 L = int(sys.argv[1])
@@ -94,6 +94,7 @@ J = float(sys.argv[2])
 beta = float(sys.argv[3])
 chain_length = float(sys.argv[4])*math.pi
 n_times = int(sys.argv[5])
+sampling_distance = float(sys.argv[6])
 
 #make a logfile in order to write stuff in it
 
@@ -130,10 +131,9 @@ chain_moves = []
 
 global_displacement = 0.0
 threshold_counter = 1.0
-global_rest_displacement = 0.0
 
-#resample_after =  0.5*chain_length/float(1.0)
-resample_after = 0.12 * math.pi
+resample_after =  0.5*chain_length/float(1.0)
+#resample_after = sampling_distance * math.pi
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
@@ -143,7 +143,7 @@ for ith_chain in xrange(n_times):
     if (ith_chain*100) % n_times == 0 and ith_chain != 0:
         percentage = ith_chain * 100 / n_times
         print '%',percentage
-        logfile.write('%3i %% done - %9.1f seconds\f \n' % (percentage, time.clock() - starting_time))
+        logfile.write('%3i %% done - %9.1f seconds \n' % (percentage, time.clock() - starting_time))
         logfile.write('Running average of average moves: %f \n' %numpy.mean(chain_moves))
         logfile.flush()
                     
@@ -218,9 +218,27 @@ for ith_chain in xrange(n_times):
         logfile.write(80 * '*' + '\n')
 
 
+h_end, binning = numpy.histogram(all_end_suscepts, bins = 100, normed=True)
+h_inbetween, binning = numpy.histogram(all_inbetween_suscepts, bins = binning, normed=True)
 
-plt.hist(all_end_suscepts,bins = 100, normed = True, alpha = 0.5)
-plt.hist(all_inbetween_suscepts, bins = 100, normed = True, alpha = 0.5)
+c_end = (binning[1]-binning[0])*numpy.cumsum(h_end)
+c_inbetween = (binning[1]-binning[0])*numpy.cumsum(h_inbetween)
+
+bins = 0.5 * (binning[1:] + binning[:-1])
+n1 = len(all_end_suscepts)
+n2 = len(all_inbetween_suscepts)
+
+
+
+D= numpy.amax(numpy.absolute(c_end - c_inbetween))
+what = 1.0*numpy.sqrt((n1+n2)/float(n1*n2))
+
+
+print D<what
+
+plt.plot(bins, c_end,'r-')
+plt.plot(bins,c_inbetween,'g-')
+
 plt.show()
 
 logfile.write('Simulation is over!\n')
@@ -231,4 +249,3 @@ numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
 logfile.write('File is saved, thank you for traveling with us')
 logfile.close()
 
-print('YOU DID COMMENT OUT THE SAVING LINES!!!!!!')
