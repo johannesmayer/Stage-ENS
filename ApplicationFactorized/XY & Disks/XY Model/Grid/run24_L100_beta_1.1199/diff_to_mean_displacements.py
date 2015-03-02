@@ -90,6 +90,11 @@ def autocorrelation(my_list, delta):
     mean = numpy.mean(my_list[delta:]*my_list[:-delta])
     return mean
         
+def read_from_cluster(vector_spins):
+    angles = [numpy.arctan(vector[1]/vector[0]) for vector in vector_spins]
+    return angles
+    
+
 ##########+#########+##########+#########+##########+#########+##########+#########
 
 if len(sys.argv) != 5 :
@@ -125,8 +130,7 @@ if not os.path.isdir(last_config_outdir):
 
 directory = sys.argv[1]
 
-file_list = [f for f in os.listdir(directory) if not f.startswith('.') and not f.startswith('cluster')]
-number_of_plots = len(file_list)
+file_list = [f for f in os.listdir(directory) if not f.startswith('.')]
 
 
 N = L*L
@@ -137,6 +141,7 @@ if len(file_list) == 0:
     spins = [random.uniform(0,2*math.pi) for k in range(N)]
 else:
     spins = numpy.load(directory+'/'+file_list[0])
+    spins = read_from_cluster(spins)
 
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
@@ -206,8 +211,8 @@ for ith_chain in xrange(n_times):
             
             
             printing_counter += 1
-            #if len(diff_moved_spins) >= 0.5*N :
-            if len(all_moved_spins) >= 0.5*N:
+            if len(diff_moved_spins) >= 0.5*N :
+            #if len(all_moved_spins) >= 0.5*N:
                 break
             
         # give a random energy to the lifting spin

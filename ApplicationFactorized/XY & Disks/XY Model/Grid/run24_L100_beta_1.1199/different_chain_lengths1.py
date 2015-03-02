@@ -92,7 +92,7 @@ def read_from_cluster(vector_spins):
 if len(sys.argv) != 7 :
     sys.exit("GIVE ME THE INPUT IN THE FORM: DIRECTORY WITH THERMALIZED CONFIGURATION : L : J : BETA : NUMBER OF SAMPLED POINTS : SAMPLING DISTANCE ")
 
-
+directory = sys.argv[1]
 L = int(sys.argv[2])
 J = float(sys.argv[3])
 beta = float(sys.argv[4])
@@ -101,8 +101,6 @@ sampling_distance = float(sys.argv[6])
 
 pi = math.pi
 twopi = 2*math.pi
-
-total_distance = number_of_samples*sampling_distance*pi
 
 #make a logfile in order to write stuff in it
 
@@ -123,8 +121,6 @@ if not os.path.isdir(outdir):
 if not os.path.isdir(last_config_outdir):
     os.makedirs(last_config_outdir)
 
-directory = sys.argv[1]
-
 file_list = [f for f in os.listdir(directory) if not f.startswith('.')]
 
 
@@ -142,8 +138,11 @@ nbr, site_dic, x_y_dic = square_neighbors(L)
 
 energy_max = energy(J,math.pi)
 
-chain_length_setups = numpy.array([1380, 2700]) * pi
+chain_length_setups = numpy.array([1450]) * pi
+total_distance = number_of_samples*sampling_distance*pi
 number_of_chains_setups = total_distance/chain_length_setups
+
+print number_of_chains_setups
 
 different_setups = []
 for dummy in range(len(chain_length_setups)):
@@ -185,6 +184,7 @@ for setup in different_setups:
     threshold_counter = 1.0
 
     for ith_chain in xrange(n_times):
+        print n_times,ith_chain, (ith_chain*100) % n_times
         if (ith_chain*100) % n_times == 0 and ith_chain != 0:
             percentage = ith_chain * 100 / n_times
             print '%',percentage
