@@ -86,19 +86,18 @@ def xy_magnetisation(spin_config):
 ##########+#########+##########+#########+##########+#########+##########+#########
 
 if len(sys.argv) != 6 :
-    sys.exit("GIVE ME THE INPUT IN THE FORM: L : J : BETA : NUMBER OF SAMPLED POINTS : SAMPLING DISTANCE ")
+    sys.exit("GIVE ME THE INPUT IN THE FORM: DIRECTORY WITH THERMALIZED CONFIGURATION : L : J : BETA : NUMBER OF SAMPLED POINTS : SAMPLING DISTANCE ")
 
 
-L = int(sys.argv[1])
-J = float(sys.argv[2])
-beta = float(sys.argv[3])
-number_of_samples = int(sys.argv[4])
-sampling_distance = float(sys.argv[5])
+L = int(sys.argv[2])
+J = float(sys.argv[3])
+beta = float(sys.argv[4])
+number_of_samples = int(sys.argv[5])
+sampling_distance = float(sys.argv[6])
 
 
 pi = math.pi
 twopi = 2*math.pi
-
 
 total_distance = number_of_samples*sampling_distance*pi
 
@@ -113,24 +112,41 @@ snap_every_n_chain = 1
 
 
 outdir = "Grid_Data"
+last_config_outdir = "last_config"
+
 
 if not os.path.isdir(outdir):
     os.makedirs(outdir)
+if not os.path.isdir(last_config_outdir):
+    os.makedirs(last_config_outdir)
+
+directory = sys.argv[1]
+
+file_list = [f for f in os.listdir(directory) if not f.startswith('.') and not f.startswith('cluster')]
+number_of_plots = len(file_list)
 
 
 N = L*L
+
+if len(file_list) == 0:
+    spin = [random.uniform(0,2*math.pi) for k in range(N)]
+else:
+    spins = numpy.load(directory+'/'+file_list[0])
+    
+
 nbr, site_dic, x_y_dic = square_neighbors(L)
 
 energy_max = energy(J,math.pi)
 
+chain_length_setups = numpy.array([100]) * pi
+number_of_chains_setups = total_distance/chain_length_setups
 
-
-different_setups = [(2*pi,total_distance/(2 * pi)),(10*pi,total_distance / (10 * pi)),(50*pi, total_distance/ (50 * pi) ),(100*pi, total_distance / (100 * pi)),(500*pi, total_distance / ( 500 * pi)),(1000 * pi, total_distance / (1000 * pi))]
+different_setups = []
+for dummy in range(len(chain_length_setups)):
+    different_setups.append((chain_length_setups[dummy],number_of_chains_setups[dummy]))
 
 
 resample_after = sampling_distance * math.pi
-
-spins = [random.uniform(0,2*math.pi) for k in range(N)]
 
 for setup in different_setups:
     starting_time = time.clock()
@@ -246,3 +262,5 @@ for setup in different_setups:
     logfile.write('File is saved in the form (suscepts at end of every %i th chain, suscepts every %f pi), thank you for traveling with us'%(snap_every_n_chain,sampling_distance))
     logfile.close()
     
+
+

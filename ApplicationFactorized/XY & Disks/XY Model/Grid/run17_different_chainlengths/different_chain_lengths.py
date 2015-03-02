@@ -246,3 +246,5 @@ for setup in different_setups:
     logfile.write('File is saved in the form (suscepts at end of every %i th chain, suscepts every %f pi), thank you for traveling with us'%(snap_every_n_chain,sampling_distance))
     logfile.close()
     
+
+

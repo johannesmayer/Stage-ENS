@@ -104,7 +104,7 @@ total_distance = number_of_samples*sampling_distance*pi
 
 #make a logfile in order to write stuff in it
 
-poss_directions = [1]
+poss_directions = [1, -1]
 
 
 guessed_equilibration_time = 0
@@ -124,10 +124,14 @@ nbr, site_dic, x_y_dic = square_neighbors(L)
 energy_max = energy(J,math.pi)
 
 
+chain_length_setups = numpy.array([2,5,10,20,50,100]) * pi
+number_of_chains_setups = total_distance/chain_length_setups
 
-different_setups = [(2*pi,total_distance/(2 * pi)),(10*pi,total_distance / (10 * pi)),(50*pi, total_distance/ (50 * pi) ),(100*pi, total_distance / (100 * pi)),(500*pi, total_distance / ( 500 * pi)),(1000 * pi, total_distance / (1000 * pi))]
+different_setups = []
+for dummy in range(len(chain_length_setups)):
+    different_setups.append((chain_length_setups[dummy],number_of_chains_setups[dummy]))
 
-
+print different_setups
 resample_after = sampling_distance * math.pi
 
 spins = [random.uniform(0,2*math.pi) for k in range(N)]
@@ -136,6 +140,7 @@ for setup in different_setups:
     starting_time = time.clock()
 
     chain_length = setup[0]
+    #add 0.5 to make the interger not too small!
     n_times = int(setup[1]+ 0.5)
     
     snap_every_n_chain = int( float(resample_after) / chain_length)

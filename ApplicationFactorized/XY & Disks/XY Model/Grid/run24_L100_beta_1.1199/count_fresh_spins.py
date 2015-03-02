@@ -2,7 +2,7 @@
 #2 spin XY model subroutine
 #author: JM
 #Date:  2015/02/23
-import numpy, random, math, time, sys, matplotlib.pylab as plt, cmath, os
+import numpy, random, math, time, sys, cmath, os, matplotlib.pylab as plt
 
 ##################+ DEFINE ALL FUNCTIONS NEEDED IN THIS SECTION +##################
 def energy(J,x):
@@ -85,16 +85,20 @@ def xy_magnetisation(spin_config):
       
 ##########+#########+##########+#########+##########+#########+##########+#########
 
-if len(sys.argv) != 7 :
-    sys.exit("GIVE ME THE INPUT IN THE FORM: L : J : BETA : CHAINLENGHT IN UNITS OF PI : NUMBER OF CHAINS : SAMPLE EVERY _ PI")
+if len(sys.argv) != 5 :
+    sys.exit("GIVE ME THE INPUT IN THE FORM: DIRECTORY WITH THERMALIZED CONFIGURATION : L : BETA  : SAMPLING DISTANCE ")
 
-
-L = int(sys.argv[1])
-J = float(sys.argv[2])
+directory = sys.argv[1]
+L = int(sys.argv[2])
+J = 1.0
 beta = float(sys.argv[3])
-chain_length = float(sys.argv[4])*math.pi
-n_times = int(sys.argv[5])
-sampling_distance = float(sys.argv[6])
+sampling_distance = float(sys.argv[4])
+
+
+pi = math.pi
+twopi = 2*math.pi
+
+
 
 #make a logfile in order to write stuff in it
 
@@ -104,64 +108,103 @@ poss_directions = [1]
 guessed_equilibration_time = 0
 snap_every_n_chain = 1
 
-
-
 outdir = "Grid_Data"
-ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains' %(beta,L, sum(poss_directions),snap_every_n_chain)
-filename = outdir + '/'+ ID +'.npy'
-
+last_config_outdir = "last_config"
 if not os.path.isdir(outdir):
     os.makedirs(outdir)
+    
+if not os.path.isdir(last_config_outdir):
+    os.makedirs(last_config_outdir)
 
-logfile = open('log_%s.txt' %ID,'w')
-logfile.write('Start with event chain run L %i and beta = %f \n' %(L,beta))
-logfile.write('Number of event chains: %i with length %f pi \n '% (n_times, chain_length/math.pi))
-logfile.flush()
+directory = sys.argv[1]
+
+file_list = [f for f in os.listdir(directory) if not f.startswith('.') and not f.startswith('cluster')]
+number_of_plots = len(file_list)
+
+
 N = L*L
+
+if len(file_list) == 0:
+    spin = [random.uniform(0,2*math.pi) for k in range(N)]
+else:
+    spins = numpy.load(directory+'/'+file_list[0])
+
+
 nbr, site_dic, x_y_dic = square_neighbors(L)
-
 energy_max = energy(J,math.pi)
+resample_after = sampling_distance * math.pi
 
-pi = math.pi
-twopi = 2*math.pi
 
-all_inbetween_suscepts=[]
-all_end_suscepts = []
-chain_moves = []
+diff_moved_spins = set()
+all_moved_spins = []
 
-global_displacement = 0.0
-threshold_counter = 1.0
-
-resample_after =  0.5*chain_length/float(1.0)
-#resample_after = sampling_distance * math.pi
-
-spins = [random.uniform(0,2*math.pi) for k in range(N)]
+overall_steps = []
+different_steps = []
 
 starting_time = time.clock()
 
+chain_length = 100*1000*pi
+#add 0.5 to make the interger not too small!
+n_times = 1
+    
+snap_every_n_chain = int( float(resample_after) / chain_length)
+if snap_every_n_chain == 0:
+    snap_every_n_chain = 1
+    
+    
+ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains_l_%i_pi' %(beta,L, sum(poss_directions),snap_every_n_chain,chain_length/pi+0.5)
+filename = outdir + '/'+ ID +'.npy'
+last_configuration_file = last_config_outdir+'/'+ID+'_last_config.npy'
+
+logfile = open('log_%s.txt' %ID,'w')
+logfile.write('Start with event chain run L %i and beta = %f' %(L,beta))
+logfile.write('Number of event chains: %i with length %f pi \n '% (n_times, chain_length/math.pi))
+logfile.write('sample at the end of each chain and also at a distance of %f' %sampling_distance)
+logfile.flush()
+
+all_inbetween_suscepts=[]
+all_end_suscepts = []
+global_displacement = 0.0
+threshold_counter = 1.0
+printing_counter = 1.0
+
 for ith_chain in xrange(n_times):
-    if (ith_chain*100) % n_times == 0 and ith_chain != 0:
-        percentage = ith_chain * 100 / n_times
-        print '%',percentage
-        logfile.write('%3i %% done - %9.1f seconds \n' % (percentage, time.clock() - starting_time))
-        logfile.write('Running average of average moves: %f \n' %numpy.mean(chain_moves))
-        logfile.flush()
+
                     
     #resample the lifting variable and then move spins throught lattice
     total_displacement = 0.0
     lift = random.randrange(N)
     direction = random.choice(poss_directions)
     #the first point in each chain is the starting point+who will move next
-    moves_this_chain = 0 
-    
+        
     while total_displacement < chain_length:
-        moves_this_chain += 1
+        
+        diff_moved_spins.add(lift)
+        all_moved_spins.append(lift)                        
+        if global_displacement > 10*pi*printing_counter:
+            percentage = 100 * (global_displacement/chain_length)
+            logfile.write('# different spins moved %i \n' %len(diff_moved_spins))
+            logfile.write('# spins moved %i \n' %len(all_moved_spins))
+            logfile.write('%3i %% done - %9.1f seconds \n' % (percentage, time.clock() - starting_time))
+            logfile.flush()
+            print '# different spins moved ', len(diff_moved_spins) 
+            print '# spins moved ' , len(all_moved_spins)
+            print
+            overall_steps.append(len(all_moved_spins))
+            different_steps.append(len(diff_moved_spins))
+
+            
+            
+            printing_counter += 1
+            if len(diff_moved_spins) == N :
+                break
+            
         # give a random energy to the lifting spin
         #check with whom he will be interacting
         neigh_deltas = [(spins[lift] - spins[nbr[lift][k]])%twopi for k in range(4)]
         distance_comparison = []
         energy_vault = []
-        
+            
         for number in neigh_deltas:
             #important to sample each neighbor individually
             upsilon=random.uniform(0.,1.)
@@ -173,10 +216,10 @@ for ith_chain in xrange(n_times):
         whos_next = nbr[lift][numpy.argmin(distance_comparison)]
         delta_phi = neigh_deltas[numpy.argmin(distance_comparison)]
         used_energy = energy_vault[numpy.argmin(distance_comparison)]
-        
+            
         rest_displacement, n_turns = calc_displacement(used_energy, J, delta_phi,direction)  
         displacement = n_turns*twopi + rest_displacement
-       
+        
         ## in this block one samples all the points one wants to see
         ######+######+######+  ######+######+######+  ######+######+######+  ######+######+######+  ######+######+######+  
         
@@ -188,7 +231,6 @@ for ith_chain in xrange(n_times):
             use_to_sample_spins = spins[:]
             use_to_sample_spins[lift] = (use_to_sample_spins[lift] + direction*use_to_sample_displacement)%twopi
             all_inbetween_suscepts.append(float(N)*abs(xy_magnetisation(use_to_sample_spins[:]))**2)
-            #print ith_chain,'mid',all_inbetween_suscepts[-1]
             threshold_counter += 1  
             temp_global_displacement += use_to_sample_displacement
             use_to_sample_displacement = rest_to_displace
@@ -204,48 +246,32 @@ for ith_chain in xrange(n_times):
             #here append the susceptibility to its array
             if ith_chain >= guessed_equilibration_time and ith_chain % snap_every_n_chain == 0:
                 all_end_suscepts.append(float(N) * abs(xy_magnetisation(spins[:])) ** 2)
-                #print ith_chain, 'end',all_end_suscepts[-1]
+                
         
         total_displacement += displacement
         global_displacement += displacement
         lift = whos_next
 
-    chain_moves.append(moves_this_chain)
     if (10 * ith_chain ) % n_times == 0:
         numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
+        numpy.save(last_configuration_file,spins)
         logfile.write(80 * '*' + '\n')
+        logfile.write('just saved last configuration \n')
         logfile.write('just saved the data after %i percent \n' %(100*ith_chain/float(n_times)))
         logfile.write(80 * '*' + '\n')
+    
 
-
-h_end, binning = numpy.histogram(all_end_suscepts, bins = 100, normed=True)
-h_inbetween, binning = numpy.histogram(all_inbetween_suscepts, bins = binning, normed=True)
-
-c_end = (binning[1]-binning[0])*numpy.cumsum(h_end)
-c_inbetween = (binning[1]-binning[0])*numpy.cumsum(h_inbetween)
-
-bins = 0.5 * (binning[1:] + binning[:-1])
-n1 = len(all_end_suscepts)
-n2 = len(all_inbetween_suscepts)
-
-
-
-D= numpy.amax(numpy.absolute(c_end - c_inbetween))
-what = 1.0*numpy.sqrt((n1+n2)/float(n1*n2))
-
-
-print D<what
-
-plt.plot(bins, c_end,'r-')
-plt.plot(bins,c_inbetween,'g-')
-
+plt.plot(overall_steps, different_steps)
+plt.xlabel('made moves')
+plt.ylabel('number of diffrent spins involved')
 plt.show()
 
 logfile.write('Simulation is over!\n')
 logfile.write('Total runtime of simulation: %f \n' % (time.clock()-starting_time))
-avg_moves = numpy.mean(chain_moves)
-logfile.write('Average Moves per event chain: %f \n' % avg_moves)
-numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
-logfile.write('File is saved, thank you for traveling with us')
+#numpy.save(last_configuration_file,spins)
+logfile.write('saved the last configuration \n')
+#numpy.save(filename,(all_end_suscepts,all_inbetween_suscepts))
+logfile.write('The data has the size:( %i , %i ) \n' %(len(all_end_suscepts),len(all_inbetween_suscepts)))
+logfile.write('File is saved in the form (suscepts at end of every %i th chain, suscepts every %f pi), thank you for traveling with us'%(snap_every_n_chain,sampling_distance))
 logfile.close()
-
+    

@@ -143,7 +143,7 @@ for setup in different_setups:
         snap_every_n_chain = 1
     
     
-    ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains_l_%i_pi' %(beta,L, sum(poss_directions),snap_every_n_chain,chain_length/pi)
+    ID = 'event_configs_beta_%.4f_L_%i_directions_%i_snap_every_%i_chains_l_%i_pi' %(beta,L, sum(poss_directions),snap_every_n_chain,chain_length/pi+0.5)
     filename = outdir + '/'+ ID +'.npy'
 
     
