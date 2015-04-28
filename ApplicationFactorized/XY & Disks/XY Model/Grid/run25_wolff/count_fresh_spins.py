@@ -5,6 +5,9 @@
 import numpy, random, math, time, sys, cmath, os, matplotlib.pylab as plt
 
 ##################+ DEFINE ALL FUNCTIONS NEEDED IN THIS SECTION +##################
+def wurzelfit(params, xdata, ydata):
+    return (ydata - numpy.dot(xdata, params))
+
 def energy(J,x):
     ene = -J*math.cos(x)
     return ene
@@ -121,8 +124,7 @@ if not os.path.isdir(last_config_outdir):
 
 directory = sys.argv[1]
 
-file_list = [f for f in os.listdir(directory) if not f.startswith('.') and not f.startswith('cluster')]
-number_of_plots = len(file_list)
+file_list = [f for f in os.listdir(directory) if not f.startswith('.') and f.startswith('cluster')]
 
 
 N = L*L
@@ -131,7 +133,7 @@ if len(file_list) == 0:
     spin = [random.uniform(0,2*math.pi) for k in range(N)]
 else:
     spins = numpy.load(directory+'/'+file_list[0])
-
+    spins = [numpy.arctan(config[1]/config[0]) for config in spins]       
 
 nbr, site_dic, x_y_dic = square_neighbors(L)
 energy_max = energy(J,math.pi)
@@ -184,7 +186,7 @@ for ith_chain in xrange(n_times):
         
         diff_moved_spins.add(lift)
         all_moved_spins.append(lift)                        
-        if global_displacement > 10*pi*printing_counter:
+        if global_displacement > 100*pi*printing_counter:
             percentage = 100 * (global_displacement/chain_length)
             logfile.write('# different spins moved %i \n' %len(diff_moved_spins))
             logfile.write('# spins moved %i \n' %len(all_moved_spins))
@@ -199,7 +201,7 @@ for ith_chain in xrange(n_times):
             
             
             printing_counter += 1
-            if len(all_moved_spins) > 1.3*N :
+            if len(all_moved_spins) > 1.1*N :
                 break
             
         # give a random energy to the lifting spin
@@ -263,7 +265,7 @@ for ith_chain in xrange(n_times):
         logfile.write('just saved the data after %i percent \n' %(100*ith_chain/float(n_times)))
         logfile.write(80 * '*' + '\n')
 """
-
+print 'start plotting'
 
 fig, axes = plt.subplots(nrows=2, ncols=1)
 
@@ -282,9 +284,11 @@ ax1.plot(range(0,highest_multipl + 1),hist,'ro')
 ax1.set_xlim([-0.5,highest_multipl + 20])
 
 
-ax2.plot(overall_steps, different_steps)
+
+ax2.loglog(overall_steps, different_steps, 'b.')
 ax2.set_xlabel('made moves')
 ax2.set_ylabel('number of diffrent spins involved')
+#ax2.set_yscale('log')
 plt.show()
 
 logfile.write('Simulation is over!\n')

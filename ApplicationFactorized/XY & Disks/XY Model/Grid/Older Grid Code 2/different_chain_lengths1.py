@@ -138,7 +138,7 @@ nbr, site_dic, x_y_dic = square_neighbors(L)
 
 energy_max = energy(J,math.pi)
 
-chain_length_setups = numpy.array([2750]) * pi
+chain_length_setups = numpy.array([1450]) * pi
 total_distance = number_of_samples*sampling_distance*pi
 number_of_chains_setups = total_distance/chain_length_setups
 

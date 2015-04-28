@@ -33,7 +33,7 @@ def square_neighbors(L):
     
 def random_uniform_on_sphere(dim):
     sigma = 1/math.sqrt(dim)
-    unit_vec = numpy.array([random.gauss(0,sigma) for index in xrange(dim)])
+    unit_vec = numpy.array([numpy.random.normal(0,sigma) for index in xrange(dim)])
     unit_vec /= math.sqrt(sum(unit_vec**2))
     return unit_vec
     
@@ -46,7 +46,7 @@ def xy_magn(spin_config):
     return mag/float(N)
 
 def cluster_update(spins, unit_vector):
-    starting_point = random.randrange(N)
+    starting_point = numpy.random.random_integers(0,N)
     projections = numpy.array([numpy.dot(spin,unit_vector) for spin in spins])
     
     pocket = [starting_point]
@@ -57,7 +57,7 @@ def cluster_update(spins, unit_vector):
     while pocket != []:
         k = pocket.pop()
         for neigh in nbr[k]:
-            if random.uniform(0.,1.) < (1 - math.exp(min(0,-2*beta*J*projections[k]*projections[neigh]))):
+            if numpy.random.uniform(0.,1.) < (1 - math.exp(min(0,-2*beta*J*projections[k]*projections[neigh]))):
                 if neigh not in cluster:
                     pocket.append(neigh)
                     cluster.append(neigh)
@@ -93,13 +93,19 @@ N_cluster_updates = int(sys.argv[4])
 nbr, site_dic, x_y_dic = square_neighbors(L)
 all_suscepts = []
 cluster_sizes = []
+
+numpy.random.seed(1)
+
+
 #initialize the spins 
 spins =numpy.array([random_uniform_on_sphere(dim) for index in xrange(N)])
 #spins = numpy.array([[1.,0.] for index in xrange(N)])
 
+print spins
+
 starting_time = time.clock()
 
-outdir = "Grid_Data"
+outdir = "test_Grid_Data"
 ID = 'L_' + str(L) + "_beta_" + str(beta)
 filename = 'cluster_sucepts_' + ID + '.npy'
 filename = outdir + '/' + filename
@@ -138,4 +144,5 @@ logfile.write('average cluster size: %.6f\n' % mean_cluster_size)
 logfile.write('ciao ciao\n')
 logfile.close()
 
+print all_suscepts
 

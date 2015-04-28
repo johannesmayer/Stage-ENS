@@ -102,6 +102,8 @@ sampling_distance = float(sys.argv[6])
 pi = math.pi
 twopi = 2*math.pi
 
+total_distance = number_of_samples*sampling_distance*pi
+
 #make a logfile in order to write stuff in it
 
 poss_directions = [1]
@@ -121,6 +123,7 @@ if not os.path.isdir(outdir):
 if not os.path.isdir(last_config_outdir):
     os.makedirs(last_config_outdir)
 
+
 file_list = [f for f in os.listdir(directory) if not f.startswith('.')]
 
 
@@ -139,10 +142,7 @@ nbr, site_dic, x_y_dic = square_neighbors(L)
 energy_max = energy(J,math.pi)
 
 chain_length_setups = numpy.array([2750]) * pi
-total_distance = number_of_samples*sampling_distance*pi
 number_of_chains_setups = total_distance/chain_length_setups
-
-print number_of_chains_setups
 
 different_setups = []
 for dummy in range(len(chain_length_setups)):

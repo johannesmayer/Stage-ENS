@@ -1,4 +1,4 @@
-import numpy, random, math, time, sys
+import numpy, random, math, time, sys, os
 
 start_time = time.time()
 
@@ -37,6 +37,8 @@ def magnetisation(S):
 if len(sys.argv) != 3:
     sys.exit("############# WRONG INPUT ############## GIVE ME THE INPUT <Standard/Factorized> _ <beta>")
 
+
+
 factorized = sys.argv[1]
 
 if factorized == "Standard":
@@ -44,13 +46,21 @@ if factorized == "Standard":
 if factorized == "Factorized":
     factorized = True
                               
-N_iter = 2**22
+N_iter = 2**3
 
 
 L = 6
 N = L*L
 
 beta = float(sys.argv[2])
+
+
+outdir = 'data'
+if not os.path.isdir(outdir):
+    os.makedirs(outdir)
+ID = 'ising'+factorized+'_%f_%i_'%(beta,L)
+filename = outdir + '/' + ID + '.npy'
+
 
 #beta = math.log(1+math.sqrt(2))/2
 #beta = 0.1

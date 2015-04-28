@@ -74,89 +74,77 @@ def cluster_update(spins, unit_vector):
 # here the dimension is the n in O(n) , the degree of symmetry
 dim = 2
 
-if len(sys.argv) != 6:
-    sys.exit("GIVE ME INPUT IN FORM:\tFOLDER WITH INITAL CONDITION\tL\tJ\tBETA\tNUMBER OF CLUSTER UPDATES")
+if len(sys.argv) != 3:
+    sys.exit("GIVE ME INPUT IN FORM:\t J \t NUMBER OF CLUSTER UPDATES")
 
 
 twopi = 2*math.pi
 pi = math.pi
 
-directory = sys.argv[1]
-L = int(sys.argv[2])
-N = L*L
+different_sizes = [32, 16, 48]
+different_betas = [1.4, 1.0, 1.3, 0.9]
 
-J = float(sys.argv[3])
-beta = float(sys.argv[4])
-
-N_cluster_updates = int(sys.argv[5])
-
-
-nbr, site_dic, x_y_dic = square_neighbors(L)
-all_suscepts = []
-cluster_sizes = []
-#initialize the spins 
-spins =numpy.array([random_uniform_on_sphere(dim) for index in xrange(N)])
-#spins = numpy.array([[1.,0.] for index in xrange(N)])
+J = float(sys.argv[1])
+N_cluster_updates = int(sys.argv[2])
 
 
 
-file_list = [f for f in os.listdir(directory) if (not f.startswith('.')) and f.startswith('cluster')]
 
-if len(file_list) == 0:
-    spin = [random.uniform(0,2*math.pi) for k in range(N)]
-    read_from_file = False
-else:
-    spins = numpy.load(directory+'/'+file_list[0])
-    read_from_file = True
+for L in different_sizes:
+    outdir = 'Grid_Data_%i' % L
 
+    if not os.path.isdir(outdir):
+        os.makedirs(outdir)
+    N = L*L
+                
+    nbr, site_dic, x_y_dic = square_neighbors(L)
 
+  
+    for beta in different_betas:  
+                
+        all_suscepts = []
+        cluster_sizes = []
+        #initialize the spins 
+        spins =numpy.array([random_uniform_on_sphere(dim) for index in xrange(N)])
+        #spins = numpy.array([[1.,0.] for index in xrange(N)])
+        
+        starting_time = time.clock()
+        
+        ID = 'L_' + str(L) + "_beta_" + str(beta)
+        filename = 'cluster_sucepts_' + ID + '.npy'
+        filename = outdir + '/' + filename
+        
+        logfile = open('log_%s.txt' % ID, 'w')
+        logfile.write('start run with L=%i and beta=%f\n' % (L, beta))
+        logfile.write('number of wolff steps: %i\n' % N_cluster_updates)
+        
+        for dummy_index in xrange(N_cluster_updates):
+            
+            if (dummy_index * 100) % N_cluster_updates == 0 and dummy_index > 0:
+                percentage = dummy_index * 100 / N_cluster_updates
+                print 'L,beta,%,time ',L, beta, percentage, time.clock() - starting_time
 
-outdir = "Grid_Data"
-ID = 'L_' + str(L) + "_beta_" + str(beta)
-filename = 'cluster_suscepts_' + ID + '.npy'
-filename = outdir + '/' + filename
-
-logfile = open('log_%s.txt' % ID, 'w')
-logfile.write('start run with L=%i and beta=%f\n' % (L, beta))
-if read_from_file == True: 
-    logfile.write('initial condition read from file\n')
-else:
-    logfile.write('random_inital_condition\n')
-    
-logfile.write('number of wolff steps: %i\n' % N_cluster_updates)
-
-if not os.path.isdir(outdir):
-    os.makedirs(outdir)
-    
-starting_time = time.clock()
-for dummy_index in xrange(N_cluster_updates):
-    
-    if (dummy_index * 100) % N_cluster_updates == 0 and dummy_index > 0:
-        percentage = dummy_index * 100 / N_cluster_updates
-        logfile.write('%3i%% done - %9.1f seconds\t' % (percentage, time.clock() - starting_time))
+                logfile.write('%3i%% done - %9.1f seconds\t' % (percentage, time.clock() - starting_time))
+                mean_cluster_size = numpy.mean(cluster_sizes)
+                logfile.write('avg cluster size: %.6f\n' % mean_cluster_size)
+                logfile.flush()
+        
+            #pick a random unit vector to project on
+            unit_vec = random_uniform_on_sphere(dim)
+            spins, n_cluster_members = cluster_update(spins,unit_vec)
+            
+            cluster_sizes.append(n_cluster_members)
+            magn_pp = xy_magn(spins)
+            all_suscepts.append(float(N)*numpy.dot(magn_pp,magn_pp))
+        
         numpy.save(filename, all_suscepts)
-        logfile.write('saved last configuration \n')
+        
+        logfile.write('%3i%% done - %9.1f seconds\n' % (100, time.clock() - starting_time))
+        logfile.write('end\n')
+        logfile.write('saving things on %s\n' % filename)
         mean_cluster_size = numpy.mean(cluster_sizes)
-        logfile.write('avg cluster size: %.6f\n' % mean_cluster_size)
-        logfile.flush()
-
-    #pick a random unit vector to project on
-    unit_vec = random_uniform_on_sphere(dim)
-    spins, n_cluster_members = cluster_update(spins,unit_vec)
-    
-    cluster_sizes.append(n_cluster_members)
-    magn_pp = xy_magn(spins)
-    all_suscepts.append( float(N) * numpy.dot(magn_pp,magn_pp)) 
-
-
-numpy.save(filename, all_suscepts)
-
-logfile.write('%3i%% done - %9.1f seconds\n' % (100, time.clock() - starting_time))
-logfile.write('end\n')
-logfile.write('saving things on %s\n' % filename)
-mean_cluster_size = numpy.mean(cluster_sizes)
-logfile.write('average cluster size: %.6f\n' % mean_cluster_size)
-logfile.write('ciao ciao\n')
-logfile.close()
+        logfile.write('average cluster size: %.6f\n' % mean_cluster_size)
+        logfile.write('ciao ciao\n')
+        logfile.close()
 
 

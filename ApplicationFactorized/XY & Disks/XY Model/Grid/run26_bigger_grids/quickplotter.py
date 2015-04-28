@@ -3,9 +3,7 @@ import numpy, matplotlib.pyplot as plt, sys
 
 if len(sys.argv) != 3:
     sys.exit("GIVE ME THE DATA FILE AND THE THERMAL CUTOFF")
-
-
-data = numpy.load(sys.argv[1])[1][int(sys.argv[2]):]
+data = numpy.load(sys.argv[1])[int(sys.argv[2]):]
 
 
 
